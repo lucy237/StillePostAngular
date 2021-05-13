@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "huxe21": {
+      "hosting": {
+        "todo-example": [
+          "huxe21"
+        ]
+      }
+    }
+  }
+}
