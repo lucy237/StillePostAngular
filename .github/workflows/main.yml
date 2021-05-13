@@ -20,6 +20,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run test:prod
-      - run: npm run lint
+      - run: cd gartic-phone && npm ci
+      - run:  cd gartic-phone && npm run test:prod
+      - run: cd gartic-phone && npm run lint
