@@ -24,6 +24,7 @@ export class AuthState implements NgxsOnInit {
         return state.user?.uid || null;
     }
 
+    // TODO: Trigger auth only once the form was submitted, as otherwise every page visit already starts authentication
     ngxsOnInit(context?: StateContext<AuthStateModel>): any {
         this.authService.authState.subscribe((user) => {
             context.dispatch(new UserChanged(user));
