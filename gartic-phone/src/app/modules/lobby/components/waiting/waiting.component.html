@@ -1,0 +1,9 @@
+<div class="card" *ngIf="lobby$ | async as lobby">
+  <h2>Code: {{ lobbyId }}</h2>
+  <ul *ngIf="players$ | async as players">
+    <li *ngFor="let player of players">
+        {{player.name}}
+    </li>
+  </ul>
+  {{lobby.isFinished}}
+</div>

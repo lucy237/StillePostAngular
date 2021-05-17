@@ -1,0 +1,20 @@
+<div class="card">
+  <h2>Join lobby</h2>
+  <form (ngSubmit)="onSubmit()">
+    <label for="lobbyId">lobby code</label>
+    <input
+      [(ngModel)]="lobbyId"
+      id="lobbyId"
+      name="lobbyId"
+    />
+    <label for="name">name</label>
+    <input
+      [(ngModel)]="name"
+      id="name"
+      name="name"
+    />
+    <button type="submit">join lobby</button>
+    or <button class='button-secondary' routerLink="/create">create new lobby</button>
+  </form>
+</div>
+
