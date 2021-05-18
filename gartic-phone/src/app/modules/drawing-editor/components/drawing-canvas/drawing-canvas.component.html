@@ -1,0 +1,15 @@
+<div class="drawingCanvas">
+  <canvas class="border border-secondary m-2" #canvasElement></canvas>
+  <div class="d-block btn-group mt-3" role="group" aria-label="Basic example">
+    <button (click)="redrawCanvas()" class="btn btn-outline-primary">redraw</button>
+    <button (click)="clearCanvas()" class="btn btn-outline-danger">clear</button>
+  </div>
+  <hr>
+  <div class="mt-5">
+    <h3>redrawn canvas (test)</h3>
+    <p>using stored data points and different dimensions/resolution</p>
+    <canvas class="border border-secondary" #secondCanvas></canvas>
+  </div>
+  <hr>
+</div>
+

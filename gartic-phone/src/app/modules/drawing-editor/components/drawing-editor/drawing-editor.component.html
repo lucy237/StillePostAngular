@@ -1,0 +1,12 @@
+<div class="drawingEditor d-flex flex-column mt-3">
+  <app-color-picker [colors]="colors" (colorEvent)="setColor($event)"></app-color-picker>
+
+  <app-drawing-canvas class="mt-3" [color]="color" (drawingChanged)="saveImage($event.base64, $event.width, $event.height)"></app-drawing-canvas>
+
+  <div *ngIf="base64" class="mt-5">
+    <h3>base64 representation</h3>
+    <p>using base64 string and dimensions from event emitter</p>
+    <img [src]="base64" alt="resulting drawing" class="border border-secondary" [width]="imgWidth" [height]="imgHeight" />
+  </div>
+  <br>
+</div>

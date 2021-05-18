@@ -1,0 +1,28 @@
+  <div class="w-full ">
+    <h1 class="flex justify-center col-span-9 row-span-1 pl-10 my-auto mt-5 mb-10">DESCRIBE THE PICTURE</h1>
+
+    <div class="w-full h-5/6 my-auto bg-white bg-opacity-50 rounded-md">
+
+      <div id="artsy-picture" class=" flex justify-center items-center w-11/12 mx-auto  h-96 rounded-md p-5 ">
+
+        <img class=" h-full mt-10 rounded-md border-4" src="./assets/img/test1.jpg" alt="artsy-drawing"/>
+      </div>
+
+      <!-- Form -->
+      <div class="mt-10">
+
+        <form (ngSubmit)="onSubmit()">
+          <input
+            class="flex justify-center w-11/12 mx-auto mt-4 "
+            id="description"
+            name="description"
+          />
+          <button class="flex justify-center mx-auto w-2/12" type="submit">Done</button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+

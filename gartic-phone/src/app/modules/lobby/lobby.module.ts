@@ -7,9 +7,10 @@ import { FormsModule } from '@angular/forms';
 import { NgxsModule } from '@ngxs/store';
 import { LobbyState } from '../../store/lobby.state';
 import { WaitingComponent } from './components/waiting/waiting.component';
+import { GameRoutingModule } from '../game/game-routing.module';
 
 @NgModule({
     declarations: [FormJoinLobbyComponent, FormCreateLobbyComponent, WaitingComponent],
-    imports: [CommonModule, LobbyRoutingModule, FormsModule, NgxsModule.forFeature([LobbyState])],
+    imports: [CommonModule, LobbyRoutingModule, FormsModule, GameRoutingModule, NgxsModule.forFeature([LobbyState])],
 })
 export class LobbyModule {}
