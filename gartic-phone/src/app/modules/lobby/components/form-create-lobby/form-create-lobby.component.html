@@ -1,13 +1,14 @@
-<div class="flex flex-col max-w-md py-4 px-8 bg-white shadow-lg rounded-lg my-20">
-  <h1>Create new lobby</h1>
+<div class="logo"><img src="./assets/img/logo.png" alt="logo"/></div>
+<div class="card">
+  <h2>CREATE NEW LOBBY</h2>
   <form (ngSubmit)="onSubmit()">
-    <label for="name">name</label>
+    <label class="text-blue-800" for="name">name</label>
     <input
       [(ngModel)]="name"
       id="name"
       name="name"
     />
     <button type="submit">create lobby</button>
-    <button routerLink='' class='button-secondary'>back</button>
+    <button routerLink='' class='button-secondary'>back to join lobby</button>
   </form>
 </div>

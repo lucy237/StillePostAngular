@@ -1,0 +1,27 @@
+<!-- Game -->
+<div class="container w-screen h-screen inline-flex grid grid-cols-4 grid-rows-6 gap-4 mt-5">
+  <div class=" h-28 flex flex-nowrap justify-center pt-5"><img src="assets/img/logo.png" alt="logo" /></div>
+
+  <!-- Playerlist -->
+  <div class="container flex bg-blue-700 col-span-1 row-span-4 row-start-2 p-4 rounded-md ">
+
+
+    <app-player-list class="flex justify-center bg-opacity-50 rounded-md w-full "></app-player-list>
+  </div>
+
+  <!-- Gamefield -->
+  <div class="container flex flex-col grid grid-cols-10 grid-rows-6 gap-2 bg-white col-span-3 bg-blue-700 row-span-5 p-4 rounded-md  ">
+
+
+     <app-timer class="col-span-1 col-start-9"></app-timer>
+
+   <app-description-canvas class="flex col-span-10 row-start-1 row-span-6 justify-center bg-opacity-50 rounded-md "></app-description-canvas>
+   <!--<app-drawing-editor class="flex col-span-10 row-span-5 row-start-2  justify-center bg-white bg-opacity-50 rounded-md"></app-drawing-editor> -->
+
+    <app-results class="flex col-span-10 row-start-2 row-span-5 justify-center bg-white bg-opacity-50 rounded-md "></app-results>
+  </div>
+
+</div>
+
+
+

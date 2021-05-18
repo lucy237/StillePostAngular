@@ -63,12 +63,12 @@ export class LobbyState implements NgxsOnInit {
                     } else {
                         return this.angularFirestore
                             .collection('lobbies')
-                            .doc<Lobby>('4WINWM')
+                            .doc<Lobby>('5B72PR')
                             .valueChanges()
                             .pipe(
                                 tap((lobby) => {
                                     console.log(lobby);
-                                    context.dispatch(new SetLobby('4WINWM', lobby));
+                                    context.dispatch(new SetLobby('5B72PR', lobby));
                                 })
                             );
                     }
@@ -83,13 +83,13 @@ export class LobbyState implements NgxsOnInit {
                     if (userId === null) {
                         return of(null);
                     } else {
-                        return this.getLobby('4WINWM')
+                        return this.getLobby('5B72PR')
                             .collection('players')
                             .valueChanges()
                             .pipe(
                                 tap((players) => {
                                     console.log(players);
-                                    context.dispatch(new SetPlayers('4WINWM', players as Player[]));
+                                    context.dispatch(new SetPlayers('5B72PR', players as Player[]));
                                 })
                             );
                     }

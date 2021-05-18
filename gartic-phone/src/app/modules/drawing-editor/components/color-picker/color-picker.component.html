@@ -1,0 +1,10 @@
+<div class="colorPicker">
+  <div
+    *ngFor="let color of colors"
+    (click)="setColor(color)"
+    class="colorPicker__item btn btn-outline-dark m-1"
+    [class]="{'colorPicker__item--active': color === activeColor}">
+    <div [ngStyle]="{'background': color.value}" class="colorPicker__color"></div>
+    {{color.key}}
+  </div>
+</div>
