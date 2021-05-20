@@ -1,24 +1,14 @@
+  <div class="w-full" *ngIf="lobby$ | async as lobby">
+    <h2 class="mb-7 text-white">Playerlist {{ lobbyId }}</h2>
+    <ul *ngIf="players$ | async as players">
+      <li class="player-playerlist text-gray-800" *ngFor="let player of players">
+        <img src="assets/img/testavatar.png" alt="player-avatar" class="avatar"/>
+        <p class="my-auto px-3">{{player.name}}</p>
+      </li>
+    </ul>
+  </div>
 
-<div class="w-full">
-  <h3 class="flex my-5">PLAYERS</h3>
-  <ul>
-    <li>
-      <div class="bg-white w-full h-12 mt-2 mx-auto bg-opacity-50 p-3 rounded-md">Testplayer</div>
-    </li>
-    <li>
-      <div class="bg-white w-full h-12 mt-2 mx-auto bg-opacity-50 p-3 rounded-md">
-        <img />
-        <p>Testplayer</p>
-      </div>
-    </li>
-  </ul>
-  <!--
-<ul *ngIf="players$ | async as players">
-    <li *ngFor="let player of players">
-      {{player.name}}
-    </li>
-  </ul>
--->
-</div>
+
+
 
 

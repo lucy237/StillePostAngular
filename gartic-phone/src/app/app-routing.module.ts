@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { GamefieldComponent } from './modules/game/components/gamefield/gamefield.component';
 
 const routes: Routes = [
     {
@@ -9,7 +8,6 @@ const routes: Routes = [
     },
     {
         path: 'game',
-        //component: GamefieldComponent,
         loadChildren: () => import('./modules/game/game.module').then((m) => m.GameModule),
     },
 ];

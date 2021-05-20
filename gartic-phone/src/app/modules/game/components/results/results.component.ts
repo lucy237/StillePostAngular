@@ -1,15 +1,22 @@
 import { Component, OnInit } from '@angular/core';
+import { Select } from '@ngxs/store';
+import { Lobby, LobbyState, Player } from '../../../../store/lobby.state';
+import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-results',
-  templateUrl: './results.component.html',
-  styleUrls: ['./results.component.scss']
+    selector: 'app-results',
+    templateUrl: './results.component.html',
+    styleUrls: ['./results.component.scss'],
 })
 export class ResultsComponent implements OnInit {
+    @Select(LobbyState.lobby)
+    lobby$: Observable<Lobby>;
 
-  constructor() { }
+    @Select(LobbyState.players)
+    players$: Observable<Player[]>;
 
-  ngOnInit(): void {
-  }
+    lobbyId = '';
+    constructor() {}
 
+    ngOnInit(): void {}
 }

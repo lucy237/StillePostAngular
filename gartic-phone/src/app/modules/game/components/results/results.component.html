@@ -1,10 +1,25 @@
-<div class="flex grid ">
-  <h1>Album of {{ 'player' }}</h1>
-  <div>
+<div class="w-full">
+  <h1 class="dynamic-headline">Album of {{ players$ }}</h1>
+  <div class="dynamic-content p-4 overscroll-auto grid-cols-12" >
 
+    <!-- item-description -->
+    <div class="flex w-full col-span-12">
+      <!-- avatar -->
+      <img src="assets/img/testavatar.png" alt="player-avatar" class="h-12 my-auto cols-span-1"/>
 
-  </div>
+      <!-- Description -->
+      <div class=" flex col-span-11 h-12 bg-white ml-4 justify-center my-auto p-2 text-2xl rounded-md">
+        bliblablub panda rolling around
+    </div>
 
+    <!-- item-picture -->
+      <div class="flex  ">
+        <!-- avatar -->
+        <img src="assets/img/testavatar.png" alt="player-avatar" class="h-12 my-auto cols-span-1"/>
 
-<p>results works!</p>
+        <!-- Drawed Picture -->
+        <div class=" flex col-span-10 h-64 bg-white ml-4 justify-center my-auto p-2 text-2xl rounded-md">
+          bliblablub panda rolling around
+        </div>
+      </div>
 </div>
