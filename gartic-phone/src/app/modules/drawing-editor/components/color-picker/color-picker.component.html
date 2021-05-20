@@ -1,10 +1,10 @@
-<div class="colorPicker">
+<div class="colorPicker grid grid-cols-7 gap-2">
   <div
     *ngFor="let color of colors"
     (click)="setColor(color)"
-    class="colorPicker__item btn btn-outline-dark m-1"
+    class="flex justify-center items-center w-24 h-10 bg-white rounded-md text-gray-800"
     [class]="{'colorPicker__item--active': color === activeColor}">
-    <div [ngStyle]="{'background': color.value}" class="colorPicker__color"></div>
+    <div [ngStyle]="{'background': color.value}" class="flex colorPicker__color"></div>
     {{color.key}}
   </div>
 </div>

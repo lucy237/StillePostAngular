@@ -10,6 +10,7 @@ import { GameRoutingModule } from './game-routing.module';
 import { NgxsModule } from '@ngxs/store';
 import { LobbyState } from '../../store/lobby.state';
 import { TimerComponent } from './components/timer/timer.component';
+import { DrawingEditorModule } from '../drawing-editor/drawing-editor.module';
 
 @NgModule({
     declarations: [
@@ -19,6 +20,6 @@ import { TimerComponent } from './components/timer/timer.component';
         ResultsComponent,
         TimerComponent,
     ],
-    imports: [CommonModule, FormsModule, GameRoutingModule, NgxsModule.forFeature([LobbyState])],
+    imports: [CommonModule, DrawingEditorModule, FormsModule, GameRoutingModule, NgxsModule.forFeature([LobbyState])],
 })
 export class GameModule {}

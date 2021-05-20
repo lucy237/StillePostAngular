@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select, Store } from '@ngxs/store';
-import { TodoInterface, TodoState } from '../../../../store/todo.state';
 import { Observable } from 'rxjs';
 import { Lobby, LobbyState, Player } from '../../../../store/lobby.state';
 
