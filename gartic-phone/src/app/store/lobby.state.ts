@@ -1,95 +1,52 @@
 import { Action, NgxsOnInit, Selector, State, StateContext, Store } from '@ngxs/store';
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
-import { AuthState } from './auth.state';
-import { from, Observable, of } from 'rxjs';
-import { CreateLobby, SetLobby, SetPlayers, UpdateLobby } from './lobby.actions';
-import { generateLobbyCode } from '../modules/lobby/utils/lobby-code';
+import { of } from 'rxjs';
+import { CreateLobby, SetLobby, SetLobbyId } from './lobby.actions';
+import { Lobby } from '../modules/shared/types/types';
+import { DbService } from '../modules/shared/services/db.service';
 import { switchMap, tap } from 'rxjs/operators';
-import { SetTodos } from './todo.actions';
-import { TodoInterface, TodoStateModel } from './todo.state';
-
-export interface Player {
-    name: string;
-    avatar: string;
-    isHost: boolean;
-}
-
-export interface Lobby {
-    created: Date;
-    maxSize: number;
-    players: Array<Player>;
-    rounds: Array<string>; // TODO: think of a way to nicely structure and save the game details (paintings, descriptions)
-    isFull: boolean;
-    isFinished: boolean;
-}
 
 interface LobbyStateModel {
     id: string;
     lobby: Lobby;
-    players: Player[];
 }
 
 @State<LobbyStateModel>({
     name: 'lobbyState',
     defaults: {
         id: null,
-        lobby: { created: null, maxSize: 8, players: [], rounds: [], isFull: false, isFinished: false },
-        players: [],
+        lobby: { created: null, maxSize: 8, isFull: false, isFinished: false, timer: null },
     },
 })
 @Injectable()
 export class LobbyState implements NgxsOnInit {
     @Selector()
+    static lobbyId(state: LobbyStateModel): string {
+        return state.id;
+    }
+
+    @Selector()
     static lobby(state: LobbyStateModel): Lobby {
         return state.lobby;
     }
 
-    @Selector()
-    static players(state: LobbyStateModel): Player[] {
-        return state.players;
-    }
+    constructor(private store: Store, private dbService: DbService) {}
 
-    constructor(private angularFirestore: AngularFirestore, private store: Store) {}
-
-    ngxsOnInit(context?: StateContext<any>): void {
-        const playerId = AuthState.userId;
+    ngxsOnInit(context?: StateContext<LobbyStateModel>): void {
+        // TODO: find a different reference to own lobbyId Selector - simplify all of this
         this.store
-            .select(playerId)
+            .select(LobbyState.lobbyId)
             .pipe(
-                switchMap((userId) => {
-                    if (userId === null) {
+                switchMap((lobbyId) => {
+                    if (lobbyId === null) {
                         return of(null);
                     } else {
-                        return this.angularFirestore
-                            .collection('lobbies')
-                            .doc<Lobby>('5B72PR')
+                        return this.dbService
+                            .getLobby(lobbyId)
                             .valueChanges()
                             .pipe(
                                 tap((lobby) => {
-                                    console.log(lobby);
-                                    context.dispatch(new SetLobby('5B72PR', lobby));
-                                })
-                            );
-                    }
-                })
-            )
-            .subscribe();
-
-        this.store
-            .select(playerId)
-            .pipe(
-                switchMap((userId) => {
-                    if (userId === null) {
-                        return of(null);
-                    } else {
-                        return this.getLobby('5B72PR')
-                            .collection('players')
-                            .valueChanges()
-                            .pipe(
-                                tap((players) => {
-                                    console.log(players);
-                                    context.dispatch(new SetPlayers('5B72PR', players as Player[]));
+                                    context.dispatch(new SetLobby(lobbyId, lobby));
                                 })
                             );
                     }
@@ -99,37 +56,22 @@ export class LobbyState implements NgxsOnInit {
     }
 
     @Action(CreateLobby)
-    createLobby(context: StateContext<LobbyStateModel>, action: CreateLobby): Observable<any> {
-        const now = new Date(); // TODO: store other useful information to the db
-        const lobbyId = generateLobbyCode(); // TODO: check if code isn't yet in the db
-        const playerId = this.getPlayerId();
-        // TODO: refactor this!
-        this.getPlayer(lobbyId, playerId).set({
-            name: action.playerName,
-            avatar: action.playerAvatar,
-            isHost: true,
-        });
-        return from(
-            this.getLobby(lobbyId).set({
-                created: now,
-                maxSize: 8,
-                isFull: false,
-                isFinished: false,
-                rounds: [],
+    async createLobby(context: StateContext<LobbyStateModel>): Promise<any> {
+        this.dbService
+            .createLobby()
+            .then((doc) => {
+                context.dispatch(new SetLobbyId(doc.id));
             })
-        );
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
-    @Action(UpdateLobby)
-    updateLobby(context: StateContext<LobbyStateModel>, action: UpdateLobby): Observable<any> {
-        const playerId = this.getPlayerId();
-        return from(
-            this.getPlayer(action.lobbyId, playerId).set({
-                name: action.playerName,
-                avatar: action.playerAvatar,
-                isHost: false,
-            })
-        );
+    @Action(SetLobbyId)
+    setLobbyId(context: StateContext<LobbyStateModel>, action: SetLobbyId): void {
+        context.patchState({
+            id: action.id,
+        });
     }
 
     @Action(SetLobby)
@@ -138,24 +80,5 @@ export class LobbyState implements NgxsOnInit {
             id: action.id,
             lobby: action.lobby,
         });
-    }
-
-    @Action(SetPlayers)
-    setPlayer(context: StateContext<LobbyStateModel>, action: SetPlayers): void {
-        context.patchState({
-            players: action.players,
-        });
-    }
-
-    private getPlayerId(): string {
-        return this.store.selectSnapshot(AuthState.userId);
-    }
-
-    private getLobby(lobbyId: string): AngularFirestoreDocument<any> {
-        return this.angularFirestore.collection('lobbies').doc(lobbyId);
-    }
-
-    private getPlayer(lobbyId: string, playerId: string): AngularFirestoreDocument<Player> {
-        return this.getLobby(lobbyId).collection('players').doc(playerId);
     }
 }

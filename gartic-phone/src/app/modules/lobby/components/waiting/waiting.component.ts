@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Select, Store } from '@ngxs/store';
+import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
-import { Lobby, LobbyState, Player } from '../../../../store/lobby.state';
+import { Lobby, Player } from '../../../shared/types/types';
+import { LobbyState } from '../../../../store/lobby.state';
+import { PlayersState } from '../../../../store/players.state.';
 
 @Component({
     selector: 'app-waiting',
@@ -10,22 +11,16 @@ import { Lobby, LobbyState, Player } from '../../../../store/lobby.state';
     styleUrls: ['./waiting.component.scss'],
 })
 export class WaitingComponent implements OnInit {
+    @Select(LobbyState.lobbyId)
+    lobbyId$: Observable<string>;
+
     @Select(LobbyState.lobby)
     lobby$: Observable<Lobby>;
 
-    @Select(LobbyState.players)
+    @Select(PlayersState.players)
     players$: Observable<Player[]>;
 
-    lobbyId = '';
+    constructor() {}
 
-    constructor(private activatedRoute: ActivatedRoute, private store: Store) {}
-
-    ngOnInit(): void {
-        this.activatedRoute.paramMap.subscribe((params) => {
-            if (params.has('id')) {
-                this.lobbyId = params.get('id');
-                // TODO: get player data from store
-            }
-        });
-    }
+    ngOnInit(): void {}
 }

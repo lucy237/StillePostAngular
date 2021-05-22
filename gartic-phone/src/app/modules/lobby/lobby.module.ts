@@ -9,9 +9,18 @@ import { LobbyState } from '../../store/lobby.state';
 import { WaitingComponent } from './components/waiting/waiting.component';
 import { CarouselComponent } from './components/carousel/carousel.component';
 import { GameRoutingModule } from '../game/game-routing.module';
+import { SharedModule } from '../shared/shared.module';
+import { PlayersState } from '../../store/players.state.';
 
 @NgModule({
     declarations: [FormJoinLobbyComponent, FormCreateLobbyComponent, WaitingComponent, CarouselComponent],
-    imports: [CommonModule, LobbyRoutingModule, FormsModule, GameRoutingModule, NgxsModule.forFeature([LobbyState])],
+    imports: [
+        CommonModule,
+        SharedModule,
+        LobbyRoutingModule,
+        FormsModule,
+        GameRoutingModule,
+        NgxsModule.forFeature([LobbyState, PlayersState]),
+    ],
 })
 export class LobbyModule {}
