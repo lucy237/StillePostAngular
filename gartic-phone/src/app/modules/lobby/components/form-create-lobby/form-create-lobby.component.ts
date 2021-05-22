@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngxs/store';
-import { CreateLobby } from '../../../../store/lobby.actions';
+import { Select, Store } from '@ngxs/store';
 import { Router } from '@angular/router';
+import { CreateLobby } from '../../../../store/lobby.actions';
+import { LobbyState } from '../../../../store/lobby.state';
+import { Observable } from 'rxjs';
+import { AddPlayer } from '../../../../store/players.actions';
 
 @Component({
     selector: 'app-form-create-lobby',
@@ -9,6 +12,9 @@ import { Router } from '@angular/router';
     styleUrls: ['./form-create-lobby.component.scss'],
 })
 export class FormCreateLobbyComponent implements OnInit {
+    @Select(LobbyState.lobbyId)
+    lobbyId$: Observable<string>;
+
     avatar = 'dasf.jpg';
     name = '';
 
@@ -16,9 +22,15 @@ export class FormCreateLobbyComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    onSubmit(): void {
-        this.store.dispatch(new CreateLobby(this.name, this.avatar)).subscribe(async () => {
-            await this.router.navigate(['waiting']);
+    async onSubmit(): Promise<any> {
+        await this.store.dispatch([new CreateLobby()]);
+        this.lobbyId$.subscribe(async (id) => {
+            if (id) {
+                await this.store.dispatch(
+                    new AddPlayer(id, { name: this.name, avatar: this.avatar, isHost: true, album: [] })
+                );
+                await this.router.navigate([`${id}/waiting`]);
+            }
         });
     }
 }

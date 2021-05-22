@@ -1,5 +1,5 @@
 <div class="logo"><img src="./assets/img/logo.png" alt="logo"/></div>
-<div class="flex justify-between card" *ngIf="lobby$ | async as lobby">
+<div class="flex justify-between card" *ngIf="lobbyId$ | async as lobbyId">
   <h2 class="flex mb-10">CODE: {{ lobbyId }}</h2>
   <ul *ngIf="players$ | async as players">
     <li class=" flex player-playerlist bg-blue-800 text-white" *ngFor="let player of players">
@@ -7,5 +7,4 @@
         <p class="my-auto px-5">{{player.name}}</p>
     </li>
   </ul>
-  {{lobby.isFinished}}
 </div>
