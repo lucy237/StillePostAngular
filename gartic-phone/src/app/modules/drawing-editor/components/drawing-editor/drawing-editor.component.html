@@ -1,5 +1,5 @@
-  <div class="flex w-full grid ">
-      <h1 class="flex w-full mt-3 mb-6">Example Description</h1>
+  <div class="flex w-full grid">
+    <h1 class="flex w-full mt-3 mb-6">Example Description</h1>
     <div class="bg-white bg-opacity-50 rounded-md max-h-full">
       <app-color-picker class="flex mb-5 justify-center mt-5" [colors]="colors" (colorEvent)="setColor($event)"></app-color-picker>
       <app-drawing-canvas class="grid mx-auto mt-5 mb-5 max-w-4xl " [color]="color" (drawingChanged)="saveImage($event.base64, $event.width, $event.height)"></app-drawing-canvas>

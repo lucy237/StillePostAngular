@@ -6,6 +6,12 @@ export class CreateLobby {
     constructor() {}
 }
 
+export class UpdateLobby {
+    static readonly type = '[Lobby] UpdateLobby';
+
+    constructor(public data: Partial<Lobby>) {}
+}
+
 export class SetLobbyId {
     static readonly type = '[Lobby] SetLobbyId';
 

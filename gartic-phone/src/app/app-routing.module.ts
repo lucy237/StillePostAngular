@@ -7,7 +7,7 @@ const routes: Routes = [
         loadChildren: () => import('./modules/lobby/lobby.module').then((m) => m.LobbyModule),
     },
     {
-        path: 'game',
+        path: ':id/game',
         loadChildren: () => import('./modules/game/game.module').then((m) => m.GameModule),
     },
 ];
