@@ -3,7 +3,7 @@
     <ul *ngIf="players$ | async as players">
       <li class="player-playerlist text-gray-800" *ngFor="let player of players">
         <img src="assets/img/testavatar.png" alt="player-avatar" class="avatar"/>
-        <p class="my-auto px-3">{{player.name}}</p>
+        <p class="my-auto px-3">{{ player.name }}</p>
       </li>
     </ul>
   </div>

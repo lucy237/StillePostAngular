@@ -1,20 +1,11 @@
 <!-- Game -->
 <div class="container w-screen h-screen inline-flex grid grid-cols-4 grid-rows-6 gap-4 mt-5">
  <app-timer class="h-28 flex justify-center pt-5" ></app-timer>
-  <!-- Playerlist -->
-        <app-player-list class="playerlist w-full "></app-player-list>
-  <!-- Gamefield -->
+  <app-player-list class="playerlist w-full "></app-player-list>
   <div class="gamefield">
-    <app-results class="game-component"></app-results>
-   <!--
-    <app-description-canvas class="game-component"></app-description-canvas>
-
-    <app-drawing-editor class="game-component"></app-drawing-editor>
-
-
-
-   -->
-
+    <div class="game-component">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 
 </div>

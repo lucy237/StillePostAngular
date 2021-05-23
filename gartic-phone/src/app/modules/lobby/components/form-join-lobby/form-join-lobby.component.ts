@@ -25,16 +25,9 @@ export class FormJoinLobbyComponent implements OnInit {
 
     async onSubmit(): Promise<any> {
         this.store.dispatch(new SetLobbyId(this.lobbyId));
-        this.lobbyId$.subscribe(async (id) => {
-            if (id) {
-                this.store.dispatch(
-                    new AddPlayer(id, {
-                        name: this.name,
-                        avatar: this.avatar,
-                        isHost: false,
-                        album: [],
-                    })
-                );
+        this.lobbyId$.subscribe(async (lobbyId) => {
+            if (lobbyId) {
+                this.store.dispatch(new AddPlayer(lobbyId, this.name, this.avatar, false));
             }
             await this.router.navigate([`${this.lobbyId}/waiting`]);
         });

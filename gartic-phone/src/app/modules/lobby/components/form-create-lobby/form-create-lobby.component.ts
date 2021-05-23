@@ -26,9 +26,7 @@ export class FormCreateLobbyComponent implements OnInit {
         await this.store.dispatch([new CreateLobby()]);
         this.lobbyId$.subscribe(async (id) => {
             if (id) {
-                await this.store.dispatch(
-                    new AddPlayer(id, { name: this.name, avatar: this.avatar, isHost: true, album: [] })
-                );
+                await this.store.dispatch(new AddPlayer(id, this.name, this.avatar, true));
                 await this.router.navigate([`${id}/waiting`]);
             }
         });

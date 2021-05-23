@@ -1,20 +1,24 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GamefieldComponent } from './components/gamefield/gamefield.component';
-import { PlayerListComponent } from './components/player-list/player-list.component';
 import { DescriptionCanvasComponent } from './components/description-canvas/description-canvas.component';
 import { ResultsComponent } from './components/results/results.component';
-import { TimerComponent } from './components/timer/timer.component';
+import { DrawingEditorComponent } from '../drawing-editor/components/drawing-editor/drawing-editor.component';
 
 const routes: Routes = [
     {
-        path: 'game',
+        path: '',
         component: GamefieldComponent,
-    },
-
-    {
-        path: 'description',
-        component: DescriptionCanvasComponent,
+        children: [
+            {
+                path: '',
+                component: DescriptionCanvasComponent,
+            },
+            {
+                path: 'draw',
+                component: DrawingEditorComponent,
+            },
+        ],
     },
     {
         path: 'results',

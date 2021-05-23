@@ -1,7 +1,7 @@
 import { Action, NgxsOnInit, Selector, State, StateContext, Store } from '@ngxs/store';
 import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
-import { CreateLobby, SetLobby, SetLobbyId } from './lobby.actions';
+import { CreateLobby, SetLobby, SetLobbyId, UpdateLobby } from './lobby.actions';
 import { Lobby } from '../modules/shared/types/types';
 import { DbService } from '../modules/shared/services/db.service';
 import { switchMap, tap } from 'rxjs/operators';
@@ -15,7 +15,7 @@ interface LobbyStateModel {
     name: 'lobbyState',
     defaults: {
         id: null,
-        lobby: { created: null, maxSize: 8, isFull: false, isFinished: false, timer: null },
+        lobby: { created: null, maxSize: 8, isFull: false, isActive: false, isFinished: false, timer: null },
     },
 })
 @Injectable()
@@ -65,6 +65,14 @@ export class LobbyState implements NgxsOnInit {
             .catch((error) => {
                 console.error(error);
             });
+    }
+
+    @Action(UpdateLobby)
+    async updateLobby(context: StateContext<LobbyStateModel>, action: UpdateLobby): Promise<any> {
+        const lobbyId = context.getState().id;
+        this.dbService.updateLobby(lobbyId, action.data).catch((error) => {
+            console.error(error);
+        });
     }
 
     @Action(SetLobbyId)

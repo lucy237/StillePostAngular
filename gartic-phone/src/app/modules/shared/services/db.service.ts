@@ -5,7 +5,7 @@ import {
     AngularFirestoreDocument,
     DocumentReference,
 } from '@angular/fire/firestore';
-import { Lobby, Player } from '../types/types';
+import { Album, Lobby, Player } from '../types/types';
 
 export const LOBBIES_COLLECTION = 'lobbies';
 export const PLAYERS_COLLECTION = 'players';
@@ -38,17 +38,29 @@ export class DbService {
             created: new Date(),
             maxSize: 8,
             isFull: false,
+            isActive: false,
             isFinished: false,
             timer: null,
         });
     }
 
-    async addPlayer(lobbyId: string, playerId: string, playerData: Player): Promise<void> {
-        return this.getPlayer(lobbyId, playerId).set({
-            name: playerData.name,
-            avatar: playerData.avatar,
-            isHost: playerData.isHost,
-            album: playerData.album,
+    async updateLobby(lobbyId: string, data: Partial<Lobby>): Promise<void> {
+        return this.getLobby(lobbyId).update(data);
+    }
+
+    async addPlayer(lobbyId: string, player: Player): Promise<void> {
+        return this.getPlayer(lobbyId, player.id).set({
+            id: player.id,
+            name: player.name,
+            avatar: player.avatar,
+            isHost: player.isHost,
+            album: player.album,
+        });
+    }
+
+    async addAlbum(lobbyId: string, playerId: string, album: Album): Promise<void> {
+        return this.getPlayer(lobbyId, playerId).update({
+            album: [album],
         });
     }
 }

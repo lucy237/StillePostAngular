@@ -9,5 +9,5 @@ export class SetPlayers {
 export class AddPlayer {
     static readonly type = '[Players] AddPlayer';
 
-    constructor(public lobbyId: string, public player: Player) {}
+    constructor(public lobbyId: string, public name: string, public avatar: string, public isHost: boolean) {}
 }

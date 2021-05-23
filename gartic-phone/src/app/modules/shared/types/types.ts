@@ -6,6 +6,7 @@ export interface Album {
 }
 
 export interface Player {
+    id: string;
     name: string;
     avatar: string;
     isHost: boolean;
@@ -16,6 +17,7 @@ export interface Lobby {
     created: Date;
     maxSize: number;
     isFull: boolean;
+    isActive: boolean;
     isFinished: boolean;
     timer: null;
 }

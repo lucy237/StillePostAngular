@@ -25,6 +25,11 @@ export class PlayersState implements NgxsOnInit {
         return state.players;
     }
 
+    @Selector()
+    static host(state: PlayersStateModel): Player {
+        return state.players.find((player) => player.isHost);
+    }
+
     constructor(private store: Store, private dbService: DbService) {}
 
     ngxsOnInit(context?: StateContext<PlayersStateModel>): void {
@@ -52,7 +57,13 @@ export class PlayersState implements NgxsOnInit {
     @Action(AddPlayer)
     async addPlayer(context: StateContext<PlayersStateModel>, action: AddPlayer): Promise<void> {
         const playerId = this.store.selectSnapshot(AuthState.userId);
-        return this.dbService.addPlayer(action.lobbyId, playerId, action.player);
+        return this.dbService.addPlayer(action.lobbyId, {
+            id: playerId,
+            name: action.name,
+            avatar: action.avatar,
+            isHost: action.isHost,
+            album: [],
+        });
     }
 
     @Action(SetPlayers)
