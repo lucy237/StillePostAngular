@@ -40,8 +40,7 @@ export class FormJoinLobbyComponent implements OnInit {
             this.store.dispatch(new SetLobbyId(this.lobbyId));
             this.lobbyId$.subscribe(async (lobbyId) => {
                 if (lobbyId) {
-                  this.store.dispatch(new AddPlayer(lobbyId, this.name, this.avatar, false));
-
+                    this.store.dispatch(new AddPlayer(lobbyId, this.name, this.avatar, false));
                 }
                 await this.router.navigate([`${this.lobbyId}/waiting`]);
             });
