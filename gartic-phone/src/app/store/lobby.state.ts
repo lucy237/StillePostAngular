@@ -1,10 +1,9 @@
 import { Action, NgxsOnInit, Selector, State, StateContext, Store } from '@ngxs/store';
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
 import { CreateLobby, SetLobby, SetLobbyId, UpdateLobby } from './lobby.actions';
 import { Lobby } from '../modules/shared/types/types';
 import { DbService } from '../modules/shared/services/db.service';
-import { switchMap, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 interface LobbyStateModel {
     id: string;
@@ -33,26 +32,18 @@ export class LobbyState implements NgxsOnInit {
     constructor(private store: Store, private dbService: DbService) {}
 
     ngxsOnInit(context?: StateContext<LobbyStateModel>): void {
-        // TODO: find a different reference to own lobbyId Selector - simplify all of this
-        this.store
-            .select(LobbyState.lobbyId)
-            .pipe(
-                switchMap((lobbyId) => {
-                    if (lobbyId === null) {
-                        return of(null);
-                    } else {
-                        return this.dbService
-                            .getLobby(lobbyId)
-                            .valueChanges()
-                            .pipe(
-                                tap((lobby) => {
-                                    context.dispatch(new SetLobby(lobbyId, lobby));
-                                })
-                            );
-                    }
-                })
-            )
-            .subscribe();
+        const id = localStorage.getItem('lobby-id');
+        if (id) {
+            this.dbService
+                .getLobby(id)
+                .valueChanges()
+                .pipe(
+                    tap((lobby) => {
+                        context.dispatch(new SetLobby(id, lobby));
+                    })
+                )
+                .subscribe();
+        }
     }
 
     @Action(CreateLobby)
@@ -60,7 +51,17 @@ export class LobbyState implements NgxsOnInit {
         this.dbService
             .createLobby()
             .then((doc) => {
+                localStorage.setItem('lobby-id', doc.id);
                 context.dispatch(new SetLobbyId(doc.id));
+                this.dbService
+                    .getLobby(doc.id)
+                    .valueChanges()
+                    .pipe(
+                        tap((lobby) => {
+                            context.dispatch(new SetLobby(doc.id, lobby));
+                        })
+                    )
+                    .subscribe();
             })
             .catch((error) => {
                 console.error(error);

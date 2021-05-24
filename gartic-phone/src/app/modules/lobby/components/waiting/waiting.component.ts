@@ -24,7 +24,7 @@ export class WaitingComponent implements OnInit {
 
     ngOnInit(): void {
         this.lobby$.subscribe(async (lobby) => {
-            if (lobby.isActive) {
+            if (lobby?.isActive) {
                 const id = this.store.selectSnapshot<string>(LobbyState.lobbyId);
                 await this.router.navigate([`${id}/game`]);
             }

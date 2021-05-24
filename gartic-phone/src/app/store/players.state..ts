@@ -1,10 +1,8 @@
 import { Action, NgxsOnInit, Selector, State, StateContext, Store } from '@ngxs/store';
 import { Injectable } from '@angular/core';
 import { AuthState } from './auth.state';
-import { of } from 'rxjs';
 import { Player } from '../modules/shared/types/types';
-import { switchMap, tap } from 'rxjs/operators';
-import { LobbyState } from './lobby.state';
+import { tap } from 'rxjs/operators';
 import { AddPlayer, SetPlayers } from './players.actions';
 import { DbService } from '../modules/shared/services/db.service';
 
@@ -33,37 +31,47 @@ export class PlayersState implements NgxsOnInit {
     constructor(private store: Store, private dbService: DbService) {}
 
     ngxsOnInit(context?: StateContext<PlayersStateModel>): void {
-        this.store
-            .select(LobbyState.lobbyId)
-            .pipe(
-                switchMap((lobbyId) => {
-                    if (lobbyId === null) {
-                        return of(null);
-                    } else {
-                        return this.dbService
-                            .getPlayersCollection(lobbyId)
-                            .valueChanges()
-                            .pipe(
-                                tap((players) => {
-                                    context.dispatch(new SetPlayers(players));
-                                })
-                            );
-                    }
-                })
-            )
-            .subscribe();
+        const id = localStorage.getItem('lobby-id');
+        if (id) {
+            this.dbService
+                .getPlayersCollection(id)
+                .valueChanges()
+                .pipe(
+                    tap((players) => {
+                        context.dispatch(new SetPlayers(players));
+                    })
+                )
+                .subscribe();
+        }
     }
 
     @Action(AddPlayer)
     async addPlayer(context: StateContext<PlayersStateModel>, action: AddPlayer): Promise<void> {
         const playerId = this.store.selectSnapshot(AuthState.userId);
-        return this.dbService.addPlayer(action.lobbyId, {
-            id: playerId,
-            name: action.name,
-            avatar: action.avatar,
-            isHost: action.isHost,
-            album: [],
-        });
+        console.log(action.lobbyId);
+        this.dbService
+            .addPlayer(action.lobbyId, {
+                id: playerId,
+                name: action.name,
+                avatar: action.avatar,
+                isHost: action.isHost,
+                album: [],
+            })
+            .then(() => {
+                localStorage.setItem('lobby-id', action.lobbyId);
+                this.dbService
+                    .getPlayersCollection(action.lobbyId)
+                    .valueChanges()
+                    .pipe(
+                        tap((players) => {
+                            context.dispatch(new SetPlayers(players));
+                        })
+                    )
+                    .subscribe();
+            })
+            .catch((e) => {
+                console.error(e);
+            });
     }
 
     @Action(SetPlayers)
