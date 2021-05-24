@@ -13,7 +13,8 @@ import { AddPlayer } from '../../../../store/players.actions';
 })
 export class FormJoinLobbyComponent implements OnInit {
     lobbyId = '';
-    avatar = 'asdf.jpg';
+    avatar =
+        'https://images.unsplash.com/photo-1601814933824-fd0b574dd592?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=80';
     name = '';
 
     @Select(LobbyState.lobbyId)
@@ -21,15 +22,29 @@ export class FormJoinLobbyComponent implements OnInit {
 
     constructor(private router: Router, private store: Store) {}
 
-    ngOnInit(): void {}
+    avatarChangedHandler(avatar: string): void {
+        this.avatar = avatar;
+    }
+
+    ngOnInit(): void {
+        if (localStorage.getItem('lobbyId') != null) {
+            this.router.navigate([`${localStorage.getItem('lobbyId')}/waiting`]);
+        }
+    }
 
     async onSubmit(): Promise<any> {
-        this.store.dispatch(new SetLobbyId(this.lobbyId));
-        this.lobbyId$.subscribe(async (lobbyId) => {
-            if (lobbyId) {
-                this.store.dispatch(new AddPlayer(lobbyId, this.name, this.avatar, false));
-            }
-            await this.router.navigate([`${this.lobbyId}/waiting`]);
-        });
+        if (this.name === '') {
+            alert('Please provide a name!');
+        } else {
+            localStorage.setItem('lobbyId', this.lobbyId);
+            this.store.dispatch(new SetLobbyId(this.lobbyId));
+            this.lobbyId$.subscribe(async (lobbyId) => {
+                if (lobbyId) {
+                  this.store.dispatch(new AddPlayer(lobbyId, this.name, this.avatar, false));
+
+                }
+                await this.router.navigate([`${this.lobbyId}/waiting`]);
+            });
+        }
     }
 }

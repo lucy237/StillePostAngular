@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -13,8 +13,6 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ],
 })
 export class CarouselComponent implements OnInit {
-    currentSlide = 0;
-
     public slides = [
         {
             description: 'Baby Yoda',
@@ -38,29 +36,44 @@ export class CarouselComponent implements OnInit {
         },
     ];
 
-    constructor() {
-        console.log('current slide: ', this.currentSlide);
+    currentSlide = 0;
+    avatarLink = this.slides[this.currentSlide].src;
+    isLoading = true;
+
+    @Output() avatarChanged: EventEmitter<string> = new EventEmitter();
+
+    constructor() {}
+
+    updateCurrentAvatar(): void {
+        this.avatarLink = this.slides[this.currentSlide].src;
+        this.avatarChanged.emit(this.avatarLink);
     }
 
-    onPreviousClick() {
+    onPreviousClick(): void {
         const previous = this.currentSlide - 1;
         this.currentSlide = previous < 0 ? this.slides.length - 1 : previous;
         console.log('previous clicked, new current slide is: ', this.currentSlide);
+        this.updateCurrentAvatar();
     }
 
-    onNextClick() {
+    onNextClick(): void {
         const next = this.currentSlide + 1;
         this.currentSlide = next === this.slides.length ? 0 : next;
         console.log('next clicked, new current slide is: ', this.currentSlide);
+        this.updateCurrentAvatar();
     }
 
     ngOnInit(): void {
         this.preloadImages();
     }
 
-    preloadImages() {
+    preloadImages(): void {
         for (const slide of this.slides) {
             new Image().src = slide.src;
         }
+    }
+
+    onLoad(): void {
+        this.isLoading = false;
     }
 }

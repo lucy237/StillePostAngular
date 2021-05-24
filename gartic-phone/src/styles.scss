@@ -56,7 +56,7 @@
     @apply flex bg-white w-full mt-2 h-16 mx-auto bg-opacity-50 pl-3 rounded-md text-xl font-semibold;
   }
   .avatar {
-    @apply h-12 my-auto;
+    @apply h-12 w-12 my-auto;
   }
   .game-component{
   @apply flex w-full col-span-10 row-span-6 justify-center rounded-md;
