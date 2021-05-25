@@ -1,8 +1,8 @@
-<div class="logo"><img src="./assets/img/logo.png" alt="logo"/></div>
+<div class="logo" xmlns="http://www.w3.org/1999/html"><img src="./assets/img/logo.png" alt="logo"/></div>
 
 <div class="card">
   <h2>JOIN LOBBY</h2>
-  <app-carousel></app-carousel>
+  <app-carousel (avatarChanged)="avatarChangedHandler($event)" ></app-carousel>
   <form (ngSubmit)="onSubmit()">
     <label class="text-blue-800" for="lobbyId">lobby code</label>
     <input

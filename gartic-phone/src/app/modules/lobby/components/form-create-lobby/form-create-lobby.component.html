@@ -1,6 +1,7 @@
 <div class="logo"><img src="./assets/img/logo.png" alt="logo"/></div>
 <div class="card">
   <h2>CREATE NEW LOBBY</h2>
+  <app-carousel (avatarChanged)="avatarChangedHandler($event)" ></app-carousel>
   <form (ngSubmit)="onSubmit()">
     <label class="text-blue-800" for="name">name</label>
     <input
