@@ -9,6 +9,7 @@
       id="name"
       name="name"
     />
+    <span class="text-red-600" *ngIf="isValid === false && name === ''" >Please enter a name</span>
     <button type="submit">create lobby</button>
     <button routerLink='' class='button-secondary'>back to join lobby</button>
   </form>

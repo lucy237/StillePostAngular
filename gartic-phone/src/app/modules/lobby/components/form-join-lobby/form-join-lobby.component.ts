@@ -17,6 +17,8 @@ export class FormJoinLobbyComponent implements OnInit {
         'https://images.unsplash.com/photo-1601814933824-fd0b574dd592?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=80';
     name = '';
 
+    isValid = true;
+
     @Select(LobbyState.lobbyId)
     lobbyId$: Observable<string>;
 
@@ -33,8 +35,9 @@ export class FormJoinLobbyComponent implements OnInit {
     }
 
     async onSubmit(): Promise<any> {
-        if (this.name === '') {
-            alert('Please provide a name!');
+        console.log(this.name, this.lobbyId);
+        if (this.name === '' || this.lobbyId === '') {
+            this.isValid = false;
         } else {
             localStorage.setItem('lobbyId', this.lobbyId);
             this.store.dispatch(new SetLobbyId(this.lobbyId));
@@ -45,5 +48,9 @@ export class FormJoinLobbyComponent implements OnInit {
                 await this.router.navigate([`${this.lobbyId}/waiting`]);
             });
         }
+    }
+
+    log(x) {
+        console.log(x);
     }
 }

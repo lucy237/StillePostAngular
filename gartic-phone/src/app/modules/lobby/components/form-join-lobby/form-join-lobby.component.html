@@ -2,22 +2,34 @@
 
 <div class="card">
   <h2>JOIN LOBBY</h2>
+
   <app-carousel (avatarChanged)="avatarChangedHandler($event)" ></app-carousel>
-  <form (ngSubmit)="onSubmit()">
-    <label class="text-blue-800" for="lobbyId">lobby code</label>
-    <input
-      [(ngModel)]="lobbyId"
-      id="lobbyId"
-      name="lobbyId"
-    />
-    <label class="text-blue-800" for="name">name</label>
-    <input
-      [(ngModel)]="name"
-      id="name"
-      name="name"
-    />
-    <button type="submit">join lobby</button>
-    <button class='button-secondary' routerLink="/create">create new lobby</button>
-  </form>
+
+    <form (ngSubmit)="onSubmit()">
+
+        <label class="text-blue-800" for="lobbyId">lobby code</label>
+        <input
+          [(ngModel)]="lobbyId"
+          id="lobbyId"
+          name="lobbyId"
+
+        />                                     <!-- && lobbyId.touched -->
+        <span class="text-red-600" *ngIf="isValid === false && lobbyId === '' ">Please provide a lobby code</span> <!--  JoinForm.get('lobbyForm')?.touched && JoinForm.get('lobbyForm')?.value === null-->
+        <span id=lobbyError class="text-red-600"> </span>
+
+
+        <label class="text-blue-800" for="name">name</label>
+        <input
+          [(ngModel)]="name"
+          id="name"
+          name="name"
+
+        />                                                <!-- && name.touched -->
+        <span class="text-red-600" *ngIf="isValid === false && name === ''" >Please enter a name</span> <!--  !name?.valid && name?.touched-->
+        <button type="submit">join lobby</button>
+        <button class='button-secondary' routerLink="/create">create new lobby</button>
+
+    </form>
+
 </div>
 
