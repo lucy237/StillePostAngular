@@ -11,6 +11,7 @@ import { NgxsModule } from '@ngxs/store';
 import { LobbyState } from '../../store/lobby.state';
 import { TimerComponent } from './components/timer/timer.component';
 import { DrawingEditorModule } from '../drawing-editor/drawing-editor.module';
+import { StartComponent } from './components/start/start.component';
 
 @NgModule({
     declarations: [
@@ -19,6 +20,7 @@ import { DrawingEditorModule } from '../drawing-editor/drawing-editor.module';
         DescriptionCanvasComponent,
         ResultsComponent,
         TimerComponent,
+        StartComponent,
     ],
     imports: [CommonModule, DrawingEditorModule, FormsModule, GameRoutingModule, NgxsModule.forFeature([LobbyState])],
 })
