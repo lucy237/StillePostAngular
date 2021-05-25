@@ -18,6 +18,7 @@ export class FormCreateLobbyComponent implements OnInit {
     avatar =
         'https://images.unsplash.com/photo-1601814933824-fd0b574dd592?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1600&q=80';
     name = '';
+    isValid = true;
 
     constructor(private router: Router, private store: Store) {}
 
@@ -29,7 +30,7 @@ export class FormCreateLobbyComponent implements OnInit {
 
     async onSubmit(): Promise<any> {
         if (this.name === '') {
-            alert('Please provide a name!');
+            this.isValid = false;
         } else {
             await this.store.dispatch([new CreateLobby()]);
             this.lobbyId$.subscribe(async (id) => {
