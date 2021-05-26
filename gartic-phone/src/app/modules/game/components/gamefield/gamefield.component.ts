@@ -53,11 +53,13 @@ export class GamefieldComponent implements OnInit, OnDestroy {
                         },
                         () => {},
                         async () => {
+                            this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
                             await this.saveRound();
                             if (this.playerId === this.hostId) {
                                 await this.store.dispatch(new StartNewRound(this.lobbyId));
                             }
                             this.resetGameField();
+                            console.log(this.lobby.roundId);
                             await this.router.navigate([
                                 `${this.lobbyId}/game/${this.gameService.getNextRoute(this.lobby.roundId)}`,
                             ]);
@@ -68,13 +70,16 @@ export class GamefieldComponent implements OnInit, OnDestroy {
     }
 
     async saveRound(): Promise<void> {
-        const lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
-        const currentAlbumPlayerId = this.gameService.getAlbumPlayerId(lobby.playerOrder, this.playerId, lobby.roundId);
+        const currentAlbumPlayerId = this.gameService.getAlbumPlayerId(
+            this.lobby.playerOrder,
+            this.playerId,
+            this.lobby.roundId
+        );
         await this.store.dispatch(
             new SaveRound(this.lobbyId, currentAlbumPlayerId, {
                 playerId: this.playerId,
-                roundId: lobby.roundId,
-                type: this.gameService.getRoundType(lobby.roundId),
+                roundId: this.lobby.roundId,
+                type: this.gameService.getRoundType(this.lobby.roundId),
                 value: this.roundValue,
             })
         );
