@@ -1,0 +1,10 @@
+<form (ngSubmit)="onSubmit()">
+  <input
+    class="flex justify-center w-11/12 mx-auto mt-4 "
+    id="description"
+    [(ngModel)]="description"
+    name="description"
+    (change)="onChange()"
+  />
+  <button class="flex justify-center mx-auto w-2/12" type="submit">Done</button>
+</form>

@@ -1,8 +1,13 @@
-export interface Album {
+export enum RoundType {
+    drawing,
+    description,
+}
+
+export interface Round {
     roundId: number;
     playerId: string;
-    description: string | null;
-    drawing: string | null;
+    type: RoundType;
+    value: string;
 }
 
 export interface Player {
@@ -10,7 +15,7 @@ export interface Player {
     name: string;
     avatar: string;
     isHost: boolean;
-    album: Album[];
+    album: Round[];
 }
 
 export interface Lobby {
@@ -19,5 +24,7 @@ export interface Lobby {
     isFull: boolean;
     isActive: boolean;
     isFinished: boolean;
-    timer: null;
+    roundId: number;
+    timer: number;
+    playerOrder: string[];
 }

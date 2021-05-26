@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 
 @Component({
     selector: 'app-start',
@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./start.component.scss'],
 })
 export class StartComponent implements OnInit {
+    @Output() descriptionChanged = new EventEmitter<string>();
     constructor() {}
     ngOnInit(): void {}
-    onSubmit(): void {}
 }

@@ -28,14 +28,13 @@ export class FormJoinLobbyComponent implements OnInit {
         this.avatar = avatar;
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         if (localStorage.getItem('lobbyId') != null) {
-            this.router.navigate([`${localStorage.getItem('lobbyId')}/waiting`]);
+            await this.router.navigate([`${localStorage.getItem('lobbyId')}/waiting`]);
         }
     }
 
     async onSubmit(): Promise<any> {
-        console.log(this.name, this.lobbyId);
         if (this.name === '' || this.lobbyId === '') {
             this.isValid = false;
         } else {
@@ -48,9 +47,5 @@ export class FormJoinLobbyComponent implements OnInit {
                 await this.router.navigate([`${this.lobbyId}/waiting`]);
             });
         }
-    }
-
-    log(x) {
-        console.log(x);
     }
 }

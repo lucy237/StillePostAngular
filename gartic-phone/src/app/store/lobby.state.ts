@@ -1,9 +1,18 @@
 import { Action, NgxsOnInit, Selector, State, StateContext, Store } from '@ngxs/store';
 import { Injectable } from '@angular/core';
-import { CreateLobby, SetLobby, SetLobbyId, UpdateLobby } from './lobby.actions';
-import { Lobby } from '../modules/shared/types/types';
+import {
+    CreateLobby,
+    SetLobby,
+    SetLobbyId,
+    SetPlayerOrder,
+    SaveRound,
+    UpdateLobby,
+    StartNewRound,
+} from './lobby.actions';
+import { Lobby, Player } from '../modules/shared/types/types';
 import { DbService } from '../modules/shared/services/db.service';
 import { tap } from 'rxjs/operators';
+import { PlayersState } from './players.state.';
 
 interface LobbyStateModel {
     id: string;
@@ -14,7 +23,16 @@ interface LobbyStateModel {
     name: 'lobbyState',
     defaults: {
         id: null,
-        lobby: { created: null, maxSize: 8, isFull: false, isActive: false, isFinished: false, timer: null },
+        lobby: {
+            created: null,
+            maxSize: 8,
+            isFull: false,
+            isActive: false,
+            isFinished: false,
+            roundId: 0,
+            timer: null,
+            playerOrder: [],
+        },
     },
 })
 @Injectable()
@@ -27,6 +45,16 @@ export class LobbyState implements NgxsOnInit {
     @Selector()
     static lobby(state: LobbyStateModel): Lobby {
         return state.lobby;
+    }
+
+    @Selector()
+    static timer(state: LobbyStateModel): number {
+        return state.lobby.timer;
+    }
+
+    @Selector()
+    static playerOrder(state: LobbyStateModel): string[] {
+        return state.lobby.playerOrder;
     }
 
     constructor(private store: Store, private dbService: DbService) {}
@@ -53,17 +81,9 @@ export class LobbyState implements NgxsOnInit {
             .then((doc) => {
                 localStorage.setItem('lobby-id', doc.id);
                 context.dispatch(new SetLobbyId(doc.id));
-                this.dbService
-                    .getLobby(doc.id)
-                    .valueChanges()
-                    .pipe(
-                        tap((lobby) => {
-                            context.dispatch(new SetLobby(doc.id, lobby));
-                        })
-                    )
-                    .subscribe();
             })
             .catch((error) => {
+                // show snackbar with error message
                 console.error(error);
             });
     }
@@ -76,8 +96,60 @@ export class LobbyState implements NgxsOnInit {
         });
     }
 
+    @Action(SetPlayerOrder)
+    async setPlayerOrder(context: StateContext<LobbyStateModel>): Promise<any> {
+        const lobbyId = context.getState().id;
+        const players = this.store.selectSnapshot(PlayersState.players);
+        const playerOrder: string[] = [];
+        players.forEach((player) => {
+            playerOrder.push(player.id);
+        });
+
+        this.dbService.updateLobby(lobbyId, { playerOrder }).catch((error) => {
+            console.error(error);
+        });
+    }
+
+    @Action(SaveRound)
+    async saveRound(context: StateContext<LobbyStateModel>, action: SaveRound): Promise<any> {
+        const lobbyId = context.getState().id;
+        this.dbService
+            .setRound(lobbyId, action.playerId, action.round)
+            .then((doc) => {
+                console.log('done creating round', doc.id);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    @Action(StartNewRound)
+    async startNewRound(context: StateContext<LobbyStateModel>, action: StartNewRound): Promise<any> {
+        const newRoundId = context.getState().lobby.roundId + 1;
+        const playerCount = this.store.selectSnapshot<Player[]>(PlayersState.players).length;
+        if (newRoundId < playerCount) {
+            this.dbService.updateLobby(action.lobbyId, { roundId: newRoundId, timer: Date.now() }).catch((error) => {
+                console.error(error);
+            });
+        } else {
+            this.dbService.updateLobby(action.lobbyId, { isFinished: true }).catch((error) => {
+                console.error(error);
+            });
+        }
+    }
+
     @Action(SetLobbyId)
     setLobbyId(context: StateContext<LobbyStateModel>, action: SetLobbyId): void {
+        this.dbService
+            .getLobby(action.id)
+            .valueChanges()
+            .pipe(
+                tap((lobby) => {
+                    context.dispatch(new SetLobby(action.id, lobby));
+                })
+            )
+            .subscribe();
+
         context.patchState({
             id: action.id,
         });
