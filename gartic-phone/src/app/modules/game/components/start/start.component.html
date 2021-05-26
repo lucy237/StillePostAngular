@@ -1,14 +1,4 @@
-
-<h1 class="dynamic-headline mb-20 ">Write something down for your teammates </h1>
-
-  <div class="dynamic-content h-1/6">
-    <!-- Form -->
-      <form (ngSubmit)="onSubmit()">
-        <input
-          class="flex justify-center w-11/12 mx-auto mt-4 "
-          id="description"
-          name="description"
-        />
-        <button class="flex justify-center mx-auto w-2/12" type="submit">Done</button>
-      </form>
-  </div>
+<h1 class="dynamic-headline mb-20 ">Write something down for your teammates</h1>
+<div class="dynamic-content h-1/6">
+  <app-form-description (descriptionChanged)="descriptionChanged.emit($event)"></app-form-description>
+</div>

@@ -5,11 +5,11 @@ import {
     AngularFirestoreDocument,
     DocumentReference,
 } from '@angular/fire/firestore';
-import { Album, Lobby, Player } from '../types/types';
+import { Round, Lobby, Player } from '../types/types';
 
 export const LOBBIES_COLLECTION = 'lobbies';
 export const PLAYERS_COLLECTION = 'players';
-export const ALBUMS_COLLECTION = 'albums';
+export const ROUNDS_COLLECTION = 'rounds';
 
 @Injectable({
     providedIn: 'root',
@@ -40,7 +40,9 @@ export class DbService {
             isFull: false,
             isActive: false,
             isFinished: false,
+            roundId: 0,
             timer: null,
+            playerOrder: [],
         });
     }
 
@@ -57,10 +59,11 @@ export class DbService {
             album: player.album,
         });
     }
+    async updatePlayer(lobbyId: string, playerId: string, data: Partial<Player>): Promise<void> {
+        return this.getPlayer(lobbyId, playerId).update(data);
+    }
 
-    async addAlbum(lobbyId: string, playerId: string, album: Album): Promise<void> {
-        return this.getPlayer(lobbyId, playerId).update({
-            album: [album],
-        });
+    async setRound(lobbyId: string, playerId: string, round: Round): Promise<DocumentReference<Round>> {
+        return this.getPlayer(lobbyId, playerId).collection<Round>(ROUNDS_COLLECTION).add(round);
     }
 }

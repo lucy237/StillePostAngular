@@ -1,10 +1,10 @@
 <!-- Game -->
 <div class="container w-screen h-screen inline-flex grid grid-cols-4 grid-rows-6 gap-4 mt-5">
- <app-timer class="h-28 flex justify-center pt-5" ></app-timer>
+ <app-timer class="h-28 flex justify-center pt-5" [time]="currentTime"></app-timer>
   <app-player-list class="playerlist w-full "></app-player-list>
   <div class="gamefield">
     <div class="game-component">
-      <router-outlet></router-outlet>
+      <router-outlet (activate)="onActivate($event)"></router-outlet>
     </div>
   </div>
 

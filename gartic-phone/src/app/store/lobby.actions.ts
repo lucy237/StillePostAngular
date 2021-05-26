@@ -1,4 +1,4 @@
-import { Lobby } from '../modules/shared/types/types';
+import { Lobby, Round } from '../modules/shared/types/types';
 
 export class CreateLobby {
     static readonly type = '[Lobby] CreateLobby';
@@ -22,4 +22,22 @@ export class SetLobby {
     static readonly type = '[Lobby] SetLobby';
 
     constructor(public id: string, public lobby: Lobby) {}
+}
+
+export class SetPlayerOrder {
+    static readonly type = '[Lobby] SetPlayerOrder';
+
+    constructor(public lobbyId: string) {}
+}
+
+export class SaveRound {
+    static readonly type = '[Lobby] SaveRound';
+
+    constructor(public lobbyId: string, public playerId: string, public round: Round) {}
+}
+
+export class StartNewRound {
+    static readonly type = '[Lobby] StartNewRound';
+
+    constructor(public lobbyId: string) {}
 }
