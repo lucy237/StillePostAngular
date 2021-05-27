@@ -1,49 +1,52 @@
-  <div class="w-screen mt-10 ">
+  <div class="w-screen mt-10 " *ngIf="players$ | async as players">
     <div class="dynamic-content flex-nowrap py-4 px-10 w-8/12 mx-auto overscroll-auto bg-blue-700" >
-      <h1 class="dynamic-headline">Album of {{ players$ }}</h1>
+      <h1 class="dynamic-headline" *ngFor="let player of players" >Album of {{ player.name}}</h1>
 
-      <!-- item-description -->
-      <div class="flex w-full my-10">
-        <!-- avatar -->
-        <img src="assets/img/testavatar.png" alt="player-avatar" class="h-12 my-auto mx-2"/>
+      <ul>
 
-        <!-- Description -->
-        <div class=" flex w-auto h-10 bg-white ml-4 justify-center py-1.5 px-10 text-xl rounded-md">
-          bliblablub panda rolling around
+        <!-- item-description -->
+        <li  *ngFor="let player of players" class="my-10">
+          <div class="flex justify-start">
+            <!-- Avatar -->
+            <img src="assets/img/testavatar.png" alt="player-avatar" class="h-14 mx-2 mt-2"/>
+            <!-- Description -->
+            <div class="flex-nowrap">
+              <span class="playerName ml-4 "> {{player.name}} </span>
+              <div class="w-auto h-10 bg-white ml-4 justify-center py-1.5 px-10 text-xl rounded-md">
+                bliblablub panda rolling around
+              </div>
+            </div>
+          </div>
+        </li>
+
+          <!-- item-drawing -->
+        <li  *ngFor="let player of players" class="my-10">
+          <div class="flex justify-end">
+            <!-- Drawing -->
+            <div class="flex-nowrap">
+              <span class="playerName mr-4 justify-end"> {{player.name}} </span>
+              <img src="assets/img/test1.jpg" alt="player-avatar" class="w-auto my-auto mx-4 rounded-md"/>
+            </div>
+            <!-- Avatar -->
+            <img src="assets/img/testavatar.png" alt="player-avatar" class="mt-2 h-14 mx-2"/>
+          </div>
+        </li>
+
+      </ul>
+
+      <div class="flex-nowrap justify-center mt-15">
+        <!-- controls -->
+        <div class="flex justify-center">
+          <button class="control prev" (click)="onPreviousClick()">
+            <span class="arrow left"></span>
+          </button>
+          <button class="control next" (click)="onNextClick()">
+            <span class="arrow right"></span>
+          </button>
         </div>
+        <p class="flex justify-center text-white "> Navigate through player's albums</p>
+
+
       </div>
-
-        <!-- item-drawing -->
-      <div class="flex w-full justify-end">
-        <!-- Drawing -->
-        <img src="assets/img/test1.jpg" alt="player-avatar" class="w-96 my-auto mx-4 rounded-md"/>
-
-        <!-- avatar -->
-        <img src="assets/img/testavatar.png" alt="player-avatar" class="h-12 my-auto mx-2"/>
-      </div>
-
-      <!-- item-description -->
-      <div class="flex w-full my-10">
-        <!-- avatar -->
-        <img src="assets/img/testavatar.png" alt="player-avatar" class="h-12 my-auto mx-2"/>
-
-        <!-- Description -->
-        <div class=" flex w-auto h-10 bg-white ml-4 justify-center py-1.5 px-10 text-xl rounded-md">
-          bliblablub panda rolling around
-        </div>
-      </div>
-
-      <!-- item-drawing -->
-      <div class="flex w-full justify-end">
-        <!-- Drawing -->
-        <img src="assets/img/test1.jpg" alt="player-avatar" class="w-96 my-auto mx-2 rounded-md"/>
-
-        <!-- avatar -->
-        <img src="assets/img/testavatar.png" alt="player-avatar" class="h-12 my-auto mx-2"/>
-      </div>
-
-
-      <h3 class="mt-5">So artsy</h3>
-
     </div>
   </div>
