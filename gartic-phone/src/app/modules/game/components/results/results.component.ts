@@ -11,12 +11,6 @@ import { animate, style, transition, trigger } from '@angular/animations';
     selector: 'app-results',
     templateUrl: './results.component.html',
     styleUrls: ['./results.component.scss'],
-    animations: [
-        trigger('carouselAnimation', [
-            transition('void => *', [style({ opacity: 0 }), animate('300ms', style({ opacity: 1 }))]),
-            transition('* => void', [animate('300ms', style({ opacity: 0 }))]),
-        ]),
-    ],
 })
 export class ResultsComponent implements OnInit {
     @Select(AuthState.userId) playerId$: Observable<string>;
@@ -26,39 +20,6 @@ export class ResultsComponent implements OnInit {
     @Select(PlayersState.host) host$: Observable<Player>;
 
     public albums = [{}];
-
-    /*
-  results: Array<Round[]> = [
-    [
-      {
-        roundId: 0,
-        playerId: 'asfd',
-        type: RoundType.description,
-        value: 'initial funny text',
-      },
-      {
-        roundId: 1,
-        playerId: '234as',
-        type: RoundType.drawing,
-        value: 'base64 string',
-      },
-    ],
-    [
-      {
-        roundId: 0,
-        playerId: 'asfd',
-        type: RoundType.description,
-        value: 'initial funny text',
-      },
-      {
-        roundId: 1,
-        playerId: '234as',
-        type: RoundType.drawing,
-        value: 'base64 string',
-      },
-    ],
-  ];
-*/
 
     lobbyId = '';
     currentAlbum = 0;
