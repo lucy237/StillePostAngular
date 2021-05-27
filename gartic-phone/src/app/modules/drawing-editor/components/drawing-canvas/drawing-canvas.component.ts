@@ -14,9 +14,9 @@ export class DrawingCanvasComponent implements AfterViewInit, OnDestroy {
     context: CanvasRenderingContext2D | null = null;
     testContext: CanvasRenderingContext2D | null = null;
 
-    @Input() public width = window.innerWidth * 0.7;
+    @Input() public width = window.innerWidth / 2;
     @Input() public widthTestCanvas = 600;
-    @Input() public height = (1.5 * window.innerWidth) / 4;
+    @Input() public height = window.innerHeight / 2;
     @Input() public heightTestCanvas = 600;
 
     @Input() public color: Color = { value: '#a23', key: 'test' };
