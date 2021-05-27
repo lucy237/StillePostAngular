@@ -60,7 +60,7 @@
     @apply flex text-white h-6 font-medium;
   }
   .avatar {
-    @apply h-12 w-12 my-auto;
+    @apply h-12 w-14 my-auto rounded-md;
   }
   .game-component{
   @apply flex w-full col-span-10 row-span-6 justify-center rounded-md;
