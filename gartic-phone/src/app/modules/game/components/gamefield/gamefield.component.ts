@@ -73,40 +73,36 @@ export class GamefieldComponent implements OnInit, OnDestroy {
                         () => {},
                         async () => {
                             this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
-                            console.log('lobby - roundId', this.lobby.roundId);
                             await this.saveRound();
                             if (this.playerId === this.hostId) {
-                                timer(2000).subscribe(async () => {
+                                timer(3000).subscribe(async () => {
                                     await this.store.dispatch(new StartNewRound(this.lobbyId));
                                 });
                             }
+                            timer(4000).subscribe(() => {
+                                // go to next round logic
+                                if (!this.store.selectSnapshot<boolean>(LobbyState.isFinished)) {
+                                    const lastPlayerId = this.gameService.getLastPlayerId(
+                                        this.lobby.playerOrder,
+                                        this.playerId
+                                    );
+                                    this.getRoundFromPlayerSubscription = this.dbService
+                                        .getLastRoundFromPlayer(this.lobbyId, lastPlayerId)
+                                        .subscribe(async (round) => {
+                                            if (!this.store.selectSnapshot<boolean>(LobbyState.isFinished)) {
+                                                if (round[0]?.value) {
+                                                    this.lastRoundValue = round[0]?.value;
+                                                }
+                                                const nextRoute = this.gameService.getNextRoute(this.lobby.roundId - 1);
+                                                await this.router.navigate([`${this.lobbyId}/game/${nextRoute}`]);
+                                                this.resetGameField();
+                                            }
+                                        });
+                                }
+                            });
                         }
                     );
-
-                // go to next round logic
-                if (!this.store.selectSnapshot<boolean>(LobbyState.isFinished)) {
-                    const ownIndex = this.lobby.playerOrder.indexOf(this.playerId);
-                    let lastPlayerIndex = ownIndex - 1;
-                    if (lastPlayerIndex < 0) {
-                        lastPlayerIndex = this.lobby.playerOrder.length - 1;
-                    }
-                    const lastPlayerId = this.lobby.playerOrder[lastPlayerIndex];
-                    this.getRoundFromPlayerSubscription = this.dbService
-                        .getLastRoundFromPlayer(this.lobbyId, lastPlayerId)
-                        .subscribe(async (round) => {
-                            if (!this.store.selectSnapshot<boolean>(LobbyState.isFinished)) {
-                                if (round[0]?.value) {
-                                    this.lastRoundValue = round[0]?.value;
-                                }
-                                // TODO: fix redirect, sometimes clients are too late and the roundId is already updated :(
-                                const nextRoute = this.gameService.getNextRoute(this.lobby.roundId);
-                                await this.router.navigate([`${this.lobbyId}/game/${nextRoute}`]);
-                                this.resetGameField();
-                            }
-                        });
-                } else {
-                    this.getRoundFromPlayerSubscription.unsubscribe();
-                }
+                this.timerIntervalSubscription.unsubscribe();
             }
         });
     }

@@ -15,6 +15,15 @@ export class GameService {
         return playerOrder[albumIndex];
     }
 
+    getLastPlayerId(playerOrder: string[], playerId: string): string {
+        const ownIndex = playerOrder.indexOf(playerId);
+        let lastPlayerIndex = ownIndex - 1;
+        if (lastPlayerIndex < 0) {
+            lastPlayerIndex = playerOrder.length - 1;
+        }
+        return playerOrder[lastPlayerIndex];
+    }
+
     getSecondsSinceTimestamp(timestamp): number {
         return Math.floor((Date.now() - timestamp) / 1000);
     }
@@ -24,7 +33,6 @@ export class GameService {
     }
 
     getNextRoute(roundId: number): string {
-        console.log(roundId);
         return this.getRoundType(roundId) === RoundType.drawing ? 'describe' : 'draw';
     }
 }
