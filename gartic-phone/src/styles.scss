@@ -32,7 +32,7 @@
   }
 
   button {
-    @apply bg-blue-800 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded mt-4;
+    @apply bg-blue-800 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded my-2;
   }
 
   .button-secondary {
@@ -60,7 +60,7 @@
     @apply flex text-white h-6 font-medium;
   }
   .avatar {
-    @apply h-12 w-14 my-auto rounded-md;
+    @apply h-12 w-14 my-auto rounded-md border-2;
   }
   .game-component{
   @apply flex w-full col-span-10 row-span-6 justify-center rounded-md;
@@ -69,10 +69,26 @@
     @apply container flex flex-col grid grid-cols-10 grid-rows-6 gap-2 bg-white col-span-3 bg-blue-700 row-span-5 p-4 rounded-md;
   }
   .dynamic-content{
-    @apply w-full h-5/6 my-auto bg-white bg-opacity-50 rounded-md;
+    @apply w-full h-auto my-auto bg-white bg-opacity-50 rounded-md;
   }
   .dynamic-headline{
     @apply flex w-full justify-center col-span-9 row-span-1 pl-10 my-auto mt-5 mb-10;
+  }
+
+  .result-item {
+    @apply flex bg-white bg-opacity-50 rounded-md pb-3;
+  }
+
+  .result-avatar {
+    @apply mt-2 h-14 w-16 mx-2 rounded-md border-2;
+  }
+
+  .result-textbox{
+    @apply w-auto h-10 bg-white ml-4 justify-center py-1.5 px-10 text-xl rounded-md;
+  }
+
+  .result-buttonbox{
+    @apply flex w-48 justify-center mx-auto content-center mt-8 bg-white bg-opacity-50 rounded-md;
   }
 
 }
