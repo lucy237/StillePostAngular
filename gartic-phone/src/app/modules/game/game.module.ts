@@ -13,6 +13,7 @@ import { TimerComponent } from './components/timer/timer.component';
 import { DrawingEditorModule } from '../drawing-editor/drawing-editor.module';
 import { StartComponent } from './components/start/start.component';
 import { FormDescriptionComponent } from './components/form-description/form-description.component';
+import { RoundDrawingComponent } from './components/round-drawing/round-drawing.component';
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { FormDescriptionComponent } from './components/form-description/form-des
         TimerComponent,
         StartComponent,
         FormDescriptionComponent,
+        RoundDrawingComponent,
     ],
     imports: [CommonModule, DrawingEditorModule, FormsModule, GameRoutingModule, NgxsModule.forFeature([LobbyState])],
 })

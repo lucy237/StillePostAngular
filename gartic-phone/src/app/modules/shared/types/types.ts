@@ -15,7 +15,6 @@ export interface Player {
     name: string;
     avatar: string;
     isHost: boolean;
-    album: Round[];
 }
 
 export interface Lobby {

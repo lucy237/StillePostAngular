@@ -24,6 +24,7 @@ export class GameService {
     }
 
     getNextRoute(roundId: number): string {
+        console.log(roundId);
         return this.getRoundType(roundId) === RoundType.drawing ? 'describe' : 'draw';
     }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
     selector: 'app-description-canvas',
@@ -6,8 +6,12 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
     styleUrls: ['./description-canvas.component.scss'],
 })
 export class DescriptionCanvasComponent implements OnInit {
+    drawing = '';
     @Output() descriptionChanged = new EventEmitter<string>();
-    constructor() {}
 
     ngOnInit(): void {}
+
+    setDrawing(drawing: string): void {
+        this.drawing = drawing;
+    }
 }

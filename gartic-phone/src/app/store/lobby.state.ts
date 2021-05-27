@@ -57,6 +57,11 @@ export class LobbyState implements NgxsOnInit {
         return state.lobby.playerOrder;
     }
 
+    @Selector()
+    static isFinished(state: LobbyStateModel): boolean {
+        return state.lobby.isFinished;
+    }
+
     constructor(private store: Store, private dbService: DbService) {}
 
     ngxsOnInit(context?: StateContext<LobbyStateModel>): void {
@@ -113,14 +118,9 @@ export class LobbyState implements NgxsOnInit {
     @Action(SaveRound)
     async saveRound(context: StateContext<LobbyStateModel>, action: SaveRound): Promise<any> {
         const lobbyId = context.getState().id;
-        this.dbService
-            .setRound(lobbyId, action.playerId, action.round)
-            .then((doc) => {
-                console.log('done creating round', doc.id);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        this.dbService.setRound(lobbyId, action.playerId, action.round).catch((error) => {
+            console.error(error);
+        });
     }
 
     @Action(StartNewRound)

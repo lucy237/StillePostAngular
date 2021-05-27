@@ -6,6 +6,7 @@ import {
     DocumentReference,
 } from '@angular/fire/firestore';
 import { Round, Lobby, Player } from '../types/types';
+import { Observable } from 'rxjs';
 
 export const LOBBIES_COLLECTION = 'lobbies';
 export const PLAYERS_COLLECTION = 'players';
@@ -33,6 +34,14 @@ export class DbService {
         return this.getLobby(lobbyId).collection<Player>(PLAYERS_COLLECTION).doc<Player>(playerId);
     }
 
+    getAlbumCollection(lobbyId: string, playerId: string): AngularFirestoreCollection<Round> {
+        return this.getPlayer(lobbyId, playerId).collection<Round>(ROUNDS_COLLECTION);
+    }
+
+    getRoundCollection(lobbyId: string, playerId: string, roundId: number): AngularFirestoreCollection<Round> {
+        return this.getAlbumCollection(lobbyId, playerId);
+    }
+
     async createLobby(): Promise<DocumentReference<Lobby>> {
         return this.getLobbyCollection().add({
             created: new Date(),
@@ -56,7 +65,6 @@ export class DbService {
             name: player.name,
             avatar: player.avatar,
             isHost: player.isHost,
-            album: player.album,
         });
     }
     async updatePlayer(lobbyId: string, playerId: string, data: Partial<Player>): Promise<void> {
@@ -65,5 +73,14 @@ export class DbService {
 
     async setRound(lobbyId: string, playerId: string, round: Round): Promise<DocumentReference<Round>> {
         return this.getPlayer(lobbyId, playerId).collection<Round>(ROUNDS_COLLECTION).add(round);
+    }
+
+    getLastRoundFromPlayer(lobbyId: string, playerId: string): Observable<Round[]> {
+        return this.getPlayer(lobbyId, playerId)
+            .collection<Round>(ROUNDS_COLLECTION, (ref) => {
+                console.log(ref.orderBy('roundId', 'asc'));
+                return ref.orderBy('roundId', 'asc').limitToLast(1);
+            })
+            .valueChanges();
     }
 }

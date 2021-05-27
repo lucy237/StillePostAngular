@@ -55,7 +55,6 @@ export class PlayersState implements NgxsOnInit {
                 name: action.name,
                 avatar: action.avatar,
                 isHost: action.isHost,
-                album: [],
             })
             .then(() => {
                 localStorage.setItem('lobby-id', action.lobbyId);

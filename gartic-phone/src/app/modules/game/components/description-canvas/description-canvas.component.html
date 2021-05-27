@@ -1,7 +1,7 @@
 <h1 class="dynamic-headline">DESCRIBE THE PICTURE</h1>
 <div class="dynamic-content">
   <div id="artsy-picture" class=" flex justify-center items-center w-11/12 mx-auto  h-96 rounded-md p-5 ">
-    <img class=" h-full mt-10 rounded-md border-4" src="./assets/img/test1.jpg" alt="artsy-drawing"/>
+    <img class=" h-full mt-10 rounded-md border-4" [src]="drawing" alt="artsy-drawing"/>
   </div>
   <div class="mt-10">
     <app-form-description (descriptionChanged)="descriptionChanged.emit($event)"></app-form-description>
