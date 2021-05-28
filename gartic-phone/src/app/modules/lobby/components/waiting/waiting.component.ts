@@ -7,6 +7,7 @@ import { PlayersState } from '../../../../store/players.state.';
 import { Router } from '@angular/router';
 import { AuthState } from '../../../../store/auth.state';
 import { SetPlayerOrder, UpdateLobby } from '../../../../store/lobby.actions';
+import { SnackbarService } from '../../../shared/services/snackbar.service';
 
 @Component({
     selector: 'app-waiting',
@@ -21,7 +22,7 @@ export class WaitingComponent implements OnInit, OnDestroy {
     @Select(PlayersState.host) host$: Observable<Player>;
     lobbySubscription: Subscription = null;
 
-    constructor(private router: Router, private store: Store) {}
+    constructor(private router: Router, private store: Store, private snackbar: SnackbarService) {}
 
     ngOnInit(): void {
         this.lobbySubscription = this.lobby$.subscribe(async (lobby) => {
@@ -33,9 +34,15 @@ export class WaitingComponent implements OnInit, OnDestroy {
     }
 
     async startGame(): Promise<void> {
-        const id = this.store.selectSnapshot<string>(LobbyState.lobbyId);
-        await this.store.dispatch(new SetPlayerOrder(id));
-        await this.store.dispatch(new UpdateLobby({ isActive: true, timer: Date.now() }));
+        if (this.store.selectSnapshot<Player[]>(PlayersState.players).length > 1) {
+            const id = this.store.selectSnapshot<string>(LobbyState.lobbyId);
+            await this.store.dispatch(new SetPlayerOrder(id));
+            await this.store.dispatch(new UpdateLobby({ isActive: true, timer: Date.now() }));
+        } else {
+            this.snackbar.activateSnackbar(
+                'Game cannot be started with only one player sdfjghkljdfj asdfkjakldfja asdfjkasdfjklaf jhjklhlk'
+            );
+        }
     }
 
     ngOnDestroy(): void {
