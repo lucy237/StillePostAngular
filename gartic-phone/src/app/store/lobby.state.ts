@@ -13,6 +13,8 @@ import { Lobby, Player } from '../modules/shared/types/types';
 import { DbService } from '../modules/shared/services/db.service';
 import { tap } from 'rxjs/operators';
 import { PlayersState } from './players.state.';
+import { Router } from '@angular/router';
+import { SnackbarService } from '../modules/shared/services/snackbar.service';
 
 interface LobbyStateModel {
     id: string;
@@ -72,20 +74,17 @@ export class LobbyState implements NgxsOnInit {
         return state.lobby.isFinished;
     }
 
-    constructor(private store: Store, private dbService: DbService) {}
+    constructor(
+        private store: Store,
+        private dbService: DbService,
+        private router: Router,
+        private snackBarService: SnackbarService
+    ) {}
 
     ngxsOnInit(context?: StateContext<LobbyStateModel>): void {
         const id = localStorage.getItem('lobby-id');
         if (id) {
-            this.dbService
-                .getLobby(id)
-                .valueChanges()
-                .pipe(
-                    tap((lobby) => {
-                        context.dispatch(new SetLobby(id, lobby));
-                    })
-                )
-                .subscribe();
+            this.subscribeToLobby(context, id);
         }
     }
 
@@ -152,18 +151,29 @@ export class LobbyState implements NgxsOnInit {
 
     @Action(SetLobbyId)
     setLobbyId(context: StateContext<LobbyStateModel>, action: SetLobbyId): void {
-        this.dbService
-            .getLobby(action.id)
-            .valueChanges()
-            .pipe(
-                tap((lobby) => {
-                    context.dispatch(new SetLobby(action.id, lobby));
-                })
-            )
-            .subscribe();
+        this.subscribeToLobby(context, action.id);
+    }
 
-        context.patchState({
-            id: action.id,
+    subscribeToLobby(context: StateContext<LobbyStateModel>, id: string): void {
+        const lobbyDoc = this.dbService.getLobby(id);
+        lobbyDoc.get().subscribe((doc) => {
+            if (doc.exists) {
+                lobbyDoc
+                    .valueChanges()
+                    .pipe(
+                        tap((lobby) => {
+                            context.dispatch(new SetLobby(id, lobby));
+                        })
+                    )
+                    .subscribe();
+                context.patchState({
+                    id,
+                });
+            } else {
+                console.log('ERROR not found');
+                this.router.navigate(['']);
+                this.snackBarService.activateSnackbar('Sorry not found!');
+            }
         });
     }
 

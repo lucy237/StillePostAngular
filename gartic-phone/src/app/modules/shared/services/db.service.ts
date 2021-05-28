@@ -8,6 +8,8 @@ import {
 import { Round, Lobby, Player } from '../types/types';
 import { Observable } from 'rxjs';
 import firebase from 'firebase';
+import { SnackbarService } from './snackbar.service';
+import { Route, Router } from '@angular/router';
 
 export const LOBBIES_COLLECTION = 'lobbies';
 export const PLAYERS_COLLECTION = 'players';
@@ -33,10 +35,6 @@ export class DbService {
 
     getPlayer(lobbyId: string, playerId: string): AngularFirestoreDocument<Player> {
         return this.getLobby(lobbyId).collection<Player>(PLAYERS_COLLECTION).doc<Player>(playerId);
-    }
-
-    getAlbumCollection(lobbyId: string, playerId: string): AngularFirestoreCollection<Round> {
-        return this.getPlayer(lobbyId, playerId).collection<Round>(ROUNDS_COLLECTION);
     }
 
     async createLobby(): Promise<DocumentReference<Lobby>> {

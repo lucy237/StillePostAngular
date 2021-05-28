@@ -28,11 +28,7 @@ export class FormJoinLobbyComponent implements OnInit {
         this.avatar = avatar;
     }
 
-    async ngOnInit(): Promise<void> {
-        if (localStorage.getItem('lobbyId') != null) {
-            await this.router.navigate([`${localStorage.getItem('lobbyId')}/waiting`]);
-        }
-    }
+    async ngOnInit(): Promise<void> {}
 
     async onSubmit(): Promise<any> {
         if (this.name === '' || this.lobbyId === '') {

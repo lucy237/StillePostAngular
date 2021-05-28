@@ -33,15 +33,17 @@ export class PlayersState implements NgxsOnInit {
     ngxsOnInit(context?: StateContext<PlayersStateModel>): void {
         const id = localStorage.getItem('lobby-id');
         if (id) {
-            this.dbService
-                .getPlayersCollection(id)
-                .valueChanges()
-                .pipe(
-                    tap((players) => {
-                        context.dispatch(new SetPlayers(players));
-                    })
-                )
-                .subscribe();
+            const playerDoc = this.dbService.getPlayersCollection(id);
+            if (playerDoc) {
+                playerDoc
+                    .valueChanges()
+                    .pipe(
+                        tap((players) => {
+                            context.dispatch(new SetPlayers(players));
+                        })
+                    )
+                    .subscribe();
+            }
         }
     }
 
