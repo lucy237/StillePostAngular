@@ -39,12 +39,10 @@ export class RoundDrawingComponent implements OnInit {
         this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
 
         // Round Logic - calculate next round route
-        const lastPlayerId = this.gameService.getLastPlayerId(this.lobby.playerOrder, this.playerId);
+        const lastPlayerId = this.gameService.getLastPlayerId(this.playerId);
         this.dbService.getLastRoundFromPlayer(this.lobbyId, lastPlayerId).subscribe(async (round) => {
-            if (this.lobby.roundId + 1 < this.lobby.playerOrder.length) {
-                if (round[0]?.value) {
-                    this.description = round[0]?.value;
-                }
+            if (round[0]?.value) {
+                this.description = round[0]?.value;
             }
         });
     }

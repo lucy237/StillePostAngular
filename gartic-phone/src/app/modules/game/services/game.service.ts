@@ -1,27 +1,42 @@
 import { Injectable } from '@angular/core';
-import { RoundType } from '../../shared/types/types';
+import { Lobby, RoundType } from '../../shared/types/types';
+import { Select } from '@ngxs/store';
+import { LobbyState } from '../../../store/lobby.state';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    constructor() {}
+    @Select(LobbyState.lobby) lobby$: Observable<Lobby>;
+    lobby: Lobby = null;
 
-    getAlbumPlayerId(playerOrder: string[], playerId: string, roundId: number): string {
-        let albumIndex = playerOrder.indexOf(playerId) + roundId;
-        if (albumIndex > playerOrder.length - 1) {
-            albumIndex = albumIndex - playerOrder.length;
-        }
-        return playerOrder[albumIndex];
+    constructor() {
+        this.lobby$.subscribe((newLobby) => {
+            this.lobby = newLobby;
+            console.log(newLobby);
+        });
     }
 
-    getLastPlayerId(playerOrder: string[], playerId: string): string {
-        const ownIndex = playerOrder.indexOf(playerId);
+    getAlbumPlayerId(playerId: string): string {
+        let albumIndex = this.lobby.playerOrder.indexOf(playerId) + this.lobby.roundId;
+        if (albumIndex > this.lobby.playerOrder.length - 1) {
+            albumIndex = albumIndex - this.lobby.playerOrder.length;
+        }
+        return this.lobby.playerOrder[albumIndex];
+    }
+
+    getLastPlayerId(playerId: string): string {
+        const ownIndex = this.lobby.playerOrder.indexOf(playerId);
         let lastPlayerIndex = ownIndex - 1;
         if (lastPlayerIndex < 0) {
-            lastPlayerIndex = playerOrder.length - 1;
+            lastPlayerIndex = this.lobby.playerOrder.length - 1;
         }
-        return playerOrder[lastPlayerIndex];
+        return this.lobby.playerOrder[lastPlayerIndex];
+    }
+
+    isNotLastRound(): boolean {
+        return this.lobby.roundId < this.lobby.playerOrder.length - 1;
     }
 
     getSecondsSinceTimestamp(timestamp): number {
