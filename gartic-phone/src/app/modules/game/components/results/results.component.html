@@ -9,14 +9,19 @@
               <div class="flex-nowrap">
                 <span class="playerName ml-4 "> {{ getPlayerById(round.playerId).name }} </span>
                 <div class="result-textbox">
+                  <div *ngIf= "round.value === null" class="font-style: italic">
+                    * No description provided *
+                  </div>
                   {{ round.value }}
                 </div>
+
               </div>
             </div>
             <div *ngIf="round.type === 0" class="result-item justify-end ">
               <div class="flex-nowrap">
                 <span class="playerName mr-4 justify-end"> {{ getPlayerById(round.playerId).name }} </span>
-                <img [src]="round.value" alt="player-avatar" class="max-w-lg my-auto mx-4 rounded-md bg-white"/>
+                <img [src]="round.value" alt="empty-drawing" class="max-w-lg my-auto mx-4 rounded-md bg-white"/>
+                <img *ngIf="round.value === ''" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="drawing" class="max-w-lg my-auto mx-4 rounded-md bg-white"/>
               </div>
               <img [src]="getPlayerById(round.playerId).avatar" alt="player-avatar" class="result-avatar"/>
             </div>
@@ -27,7 +32,9 @@
 
 
       <div class="result-buttonbox" *ngIf="players.length > 0">
-          Album {{ currentPlayerIndex + 1 }} of {{ players.length }}
+        <br>
+        <div class="playerName">Album {{ currentPlayerIndex + 1 }} of {{ players.length }}</div>
+        <br>
           <button [disabled]="isLoading" class="button mx-1" (click)="onPreviousClick()">
            previous
           </button>

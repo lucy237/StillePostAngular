@@ -39,9 +39,7 @@ export class WaitingComponent implements OnInit, OnDestroy {
             await this.store.dispatch(new SetPlayerOrder(id));
             await this.store.dispatch(new UpdateLobby({ isActive: true, timer: Date.now() }));
         } else {
-            this.snackbar.activateSnackbar(
-                'Game cannot be started with only one player sdfjghkljdfj asdfkjakldfja asdfjkasdfjklaf jhjklhlk'
-            );
+            this.snackbar.activateSnackbar('Game cannot be started with only one player');
         }
     }
 
