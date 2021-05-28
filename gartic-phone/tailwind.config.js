@@ -7,7 +7,7 @@ module.exports = {
     darkMode: false, // or 'media' or 'class'
     theme: {
         extend: {
-            backgroundImage: (theme) => ({
+            backgroundImage: () => ({
                 // prettier-ignore
                 "pattern": "url('./assets/img/bg-pattern.jpg')",
             }),
@@ -17,7 +17,9 @@ module.exports = {
         },
     },
     variants: {
-        extend: {},
+        extend: {
+            opacity: ['disabled'],
+        },
     },
     plugins: [],
 };

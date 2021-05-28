@@ -12,6 +12,8 @@ import { StartComponent } from '../start/start.component';
 import { DescriptionCanvasComponent } from '../description-canvas/description-canvas.component';
 import { DrawingEditorComponent } from '../../../drawing-editor/components/drawing-editor/drawing-editor.component';
 import { GameService } from '../../services/game.service';
+import { RoundDrawingComponent } from '../round-drawing/round-drawing.component';
+import { DbService } from '../../../shared/services/db.service';
 
 @Component({
     selector: 'app-gamefield',
@@ -20,49 +22,78 @@ import { GameService } from '../../services/game.service';
 })
 export class GamefieldComponent implements OnInit, OnDestroy {
     @Select(LobbyState.timer) timer$: Observable<number>;
+    @Select(LobbyState.isFinished) isFinished$: Observable<boolean>;
+    @Select(LobbyState.roundId) roundId$: Observable<number>;
+    @Select(LobbyState.resultCounter) resultCounter$: Observable<number>;
 
-    timespan = 20;
-    currentTime = this.timespan;
-    roundValue = '';
+    timespan = 5;
+    currentTime = null;
+    roundValue = null;
     lobbyId: string = null;
     lobby: Lobby = null;
     playerId: string = null;
+    players: Player[] = null;
     hostId: string = null;
+    nextRoute: string = null;
+    isLoading = false;
 
-    timerSubscription: Subscription = null;
+    timeStampSubscription: Subscription = null;
     timerIntervalSubscription: Subscription = null;
     roundValueSubscription: Subscription = null;
 
-    constructor(private store: Store, private router: Router, private gameService: GameService) {}
+    constructor(
+        private store: Store,
+        private router: Router,
+        private gameService: GameService,
+        private dbService: DbService
+    ) {}
 
     async ngOnInit(): Promise<any> {
         this.lobbyId = this.store.selectSnapshot<string>(LobbyState.lobbyId);
         this.hostId = this.store.selectSnapshot<Player>(PlayersState.host).id;
         this.playerId = this.store.selectSnapshot<string>(AuthState.userId);
+        this.players = this.store.selectSnapshot<Player[]>(PlayersState.players);
+        this.lobby = this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
 
-        this.timerSubscription = this.timer$.subscribe((timer) => {
-            if (timer !== null) {
+        this.isFinished$.subscribe(async (isFinished) => {
+            if (isFinished) {
+                await this.router.navigate(['/results']);
+            }
+        });
+
+        this.resultCounter$.subscribe(async (counter) => {
+            if (counter === this.players.length) {
+                if (this.playerId === this.hostId) {
+                    await this.store.dispatch(new StartNewRound(this.lobbyId));
+                }
+                this.resetGameField();
+                await this.router.navigate([this.nextRoute]);
+            }
+        });
+
+        this.timeStampSubscription = this.timer$.subscribe(async (timestamp) => {
+            if (timestamp !== null) {
+                this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
+                if (this.gameService.isNotLastRound()) {
+                    this.nextRoute = `${this.lobbyId}/game/${this.gameService.getNextRoute(this.lobby.roundId)}`;
+                }
+
+                this.currentTime = this.timespan;
                 this.timerIntervalSubscription = interval(1000)
                     .pipe(takeWhile(() => this.currentTime > 0))
                     .subscribe(
                         () => {
-                            this.currentTime = this.timespan - this.gameService.getSecondsSinceTimestamp(timer);
+                            const timestampFromDb = this.store.selectSnapshot<number>(LobbyState.timer);
+                            this.currentTime =
+                                this.timespan - this.gameService.getSecondsSinceTimestamp(timestampFromDb);
                             if (this.currentTime < 0) {
                                 this.currentTime = 0;
                             }
                         },
                         () => {},
                         async () => {
-                            this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
+                            await this.router.navigate([`${this.lobbyId}/game/loading`]);
                             await this.saveRound();
-                            if (this.playerId === this.hostId) {
-                                await this.store.dispatch(new StartNewRound(this.lobbyId));
-                            }
-                            this.resetGameField();
-                            console.log(this.lobby.roundId);
-                            await this.router.navigate([
-                                `${this.lobbyId}/game/${this.gameService.getNextRoute(this.lobby.roundId)}`,
-                            ]);
                         }
                     );
             }
@@ -70,11 +101,7 @@ export class GamefieldComponent implements OnInit, OnDestroy {
     }
 
     async saveRound(): Promise<void> {
-        const currentAlbumPlayerId = this.gameService.getAlbumPlayerId(
-            this.lobby.playerOrder,
-            this.playerId,
-            this.lobby.roundId
-        );
+        const currentAlbumPlayerId = this.gameService.getAlbumPlayerId(this.playerId);
         await this.store.dispatch(
             new SaveRound(this.lobbyId, currentAlbumPlayerId, {
                 playerId: this.playerId,
@@ -83,6 +110,7 @@ export class GamefieldComponent implements OnInit, OnDestroy {
                 value: this.roundValue,
             })
         );
+        await this.dbService.incrementResultCounter(this.lobbyId);
     }
 
     resetGameField(): void {
@@ -91,7 +119,11 @@ export class GamefieldComponent implements OnInit, OnDestroy {
     }
 
     onActivate(componentReference: StartComponent | DrawingEditorComponent | DescriptionCanvasComponent): void {
-        if (componentReference instanceof DrawingEditorComponent) {
+        // make sure the timer is unsubscribed before we start a new round
+        if (this.timerIntervalSubscription) {
+            this.timerIntervalSubscription.unsubscribe();
+        }
+        if (componentReference instanceof RoundDrawingComponent) {
             this.roundValueSubscription = componentReference.drawingChanged.subscribe((params) => {
                 this.roundValue = params.base64;
             });
@@ -106,8 +138,7 @@ export class GamefieldComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.timerSubscription.unsubscribe();
-        this.timerIntervalSubscription.unsubscribe();
+        this.timeStampSubscription.unsubscribe();
         this.roundValueSubscription.unsubscribe();
     }
 }

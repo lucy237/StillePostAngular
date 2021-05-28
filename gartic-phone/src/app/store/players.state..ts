@@ -48,14 +48,12 @@ export class PlayersState implements NgxsOnInit {
     @Action(AddPlayer)
     async addPlayer(context: StateContext<PlayersStateModel>, action: AddPlayer): Promise<void> {
         const playerId = this.store.selectSnapshot(AuthState.userId);
-        console.log(action.lobbyId);
         this.dbService
             .addPlayer(action.lobbyId, {
                 id: playerId,
                 name: action.name,
                 avatar: action.avatar,
                 isHost: action.isHost,
-                album: [],
             })
             .then(() => {
                 localStorage.setItem('lobby-id', action.lobbyId);

@@ -3,8 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { GamefieldComponent } from './components/gamefield/gamefield.component';
 import { DescriptionCanvasComponent } from './components/description-canvas/description-canvas.component';
 import { ResultsComponent } from './components/results/results.component';
-import { DrawingEditorComponent } from '../drawing-editor/components/drawing-editor/drawing-editor.component';
 import { StartComponent } from './components/start/start.component';
+import { RoundDrawingComponent } from './components/round-drawing/round-drawing.component';
+import { LoadingSpinnerComponent } from '../shared/components/loading-spinner/loading-spinner.component';
 
 const routes: Routes = [
     {
@@ -22,7 +23,11 @@ const routes: Routes = [
             },
             {
                 path: 'draw',
-                component: DrawingEditorComponent,
+                component: RoundDrawingComponent,
+            },
+            {
+                path: 'loading',
+                component: LoadingSpinnerComponent,
             },
         ],
     },

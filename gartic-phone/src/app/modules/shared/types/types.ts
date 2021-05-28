@@ -15,7 +15,6 @@ export interface Player {
     name: string;
     avatar: string;
     isHost: boolean;
-    album: Round[];
 }
 
 export interface Lobby {
@@ -24,6 +23,7 @@ export interface Lobby {
     isFull: boolean;
     isActive: boolean;
     isFinished: boolean;
+    resultCounter: number;
     roundId: number;
     timer: number;
     playerOrder: string[];

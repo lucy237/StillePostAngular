@@ -1,18 +1,47 @@
 import { Injectable } from '@angular/core';
-import { RoundType } from '../../shared/types/types';
+import { Lobby, RoundType } from '../../shared/types/types';
+import { Select } from '@ngxs/store';
+import { LobbyState } from '../../../store/lobby.state';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameService {
-    constructor() {}
+    @Select(LobbyState.lobby) lobby$: Observable<Lobby>;
+    @Select(LobbyState.lobbyId) lobbyId$: Observable<string>;
+    lobby: Lobby = null;
+    lobbyId: string = null;
+    playerId: string = null;
 
-    getAlbumPlayerId(playerOrder: string[], playerId: string, roundId: number): string {
-        let albumIndex = playerOrder.indexOf(playerId) + roundId;
-        if (albumIndex > playerOrder.length - 1) {
-            albumIndex = albumIndex - playerOrder.length;
+    constructor() {
+        this.lobby$.subscribe((newLobby) => {
+            this.lobby = newLobby;
+        });
+        this.lobbyId$.subscribe((newLobbyId) => {
+            this.lobbyId = newLobbyId;
+        });
+    }
+
+    getAlbumPlayerId(playerId: string): string {
+        let albumIndex = this.lobby.playerOrder.indexOf(playerId) + this.lobby.roundId;
+        if (albumIndex > this.lobby.playerOrder.length - 1) {
+            albumIndex = albumIndex - this.lobby.playerOrder.length;
         }
-        return playerOrder[albumIndex];
+        return this.lobby.playerOrder[albumIndex];
+    }
+
+    getLastPlayerId(playerId: string): string {
+        const ownIndex = this.lobby.playerOrder.indexOf(playerId);
+        let lastPlayerIndex = ownIndex - 1;
+        if (lastPlayerIndex < 0) {
+            lastPlayerIndex = this.lobby.playerOrder.length - 1;
+        }
+        return this.lobby.playerOrder[lastPlayerIndex];
+    }
+
+    isNotLastRound(): boolean {
+        return this.lobby.roundId < this.lobby.playerOrder.length - 1;
     }
 
     getSecondsSinceTimestamp(timestamp): number {

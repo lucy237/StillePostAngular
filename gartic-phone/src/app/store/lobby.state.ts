@@ -29,6 +29,7 @@ interface LobbyStateModel {
             isFull: false,
             isActive: false,
             isFinished: false,
+            resultCounter: 0,
             roundId: 0,
             timer: null,
             playerOrder: [],
@@ -53,8 +54,22 @@ export class LobbyState implements NgxsOnInit {
     }
 
     @Selector()
+    static roundId(state: LobbyStateModel): number {
+        return state.lobby.roundId;
+    }
+
+    @Selector()
     static playerOrder(state: LobbyStateModel): string[] {
         return state.lobby.playerOrder;
+    }
+    @Selector()
+    static resultCounter(state: LobbyStateModel): number {
+        return state.lobby.resultCounter;
+    }
+
+    @Selector()
+    static isFinished(state: LobbyStateModel): boolean {
+        return state.lobby.isFinished;
     }
 
     constructor(private store: Store, private dbService: DbService) {}
@@ -113,14 +128,9 @@ export class LobbyState implements NgxsOnInit {
     @Action(SaveRound)
     async saveRound(context: StateContext<LobbyStateModel>, action: SaveRound): Promise<any> {
         const lobbyId = context.getState().id;
-        this.dbService
-            .setRound(lobbyId, action.playerId, action.round)
-            .then((doc) => {
-                console.log('done creating round', doc.id);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        this.dbService.setRound(lobbyId, action.playerId, action.round).catch((error) => {
+            console.error(error);
+        });
     }
 
     @Action(StartNewRound)
@@ -128,9 +138,11 @@ export class LobbyState implements NgxsOnInit {
         const newRoundId = context.getState().lobby.roundId + 1;
         const playerCount = this.store.selectSnapshot<Player[]>(PlayersState.players).length;
         if (newRoundId < playerCount) {
-            this.dbService.updateLobby(action.lobbyId, { roundId: newRoundId, timer: Date.now() }).catch((error) => {
-                console.error(error);
-            });
+            this.dbService
+                .updateLobby(action.lobbyId, { roundId: newRoundId, timer: Date.now(), resultCounter: 0 })
+                .catch((error) => {
+                    console.error(error);
+                });
         } else {
             this.dbService.updateLobby(action.lobbyId, { isFinished: true }).catch((error) => {
                 console.error(error);
