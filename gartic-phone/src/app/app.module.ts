@@ -12,6 +12,7 @@ import { NgxsModule } from '@ngxs/store';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { AuthState } from './store/auth.state';
+import { SharedModule } from './modules/shared/shared.module';
 
 const appInitFn = (angularAuth: AngularFireAuth) => {
     return () => angularAuth.signInAnonymously();
@@ -29,6 +30,7 @@ const appInitFn = (angularAuth: AngularFireAuth) => {
         NgxsLoggerPluginModule.forRoot(),
         NgxsReduxDevtoolsPluginModule.forRoot(),
         BrowserAnimationsModule,
+        SharedModule,
     ],
     providers: [
         {

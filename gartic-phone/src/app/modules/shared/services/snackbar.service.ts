@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
+@Injectable({
+    providedIn: 'root',
+})
 @Injectable({
     providedIn: 'root',
 })
 export class SnackbarService {
     // TODO: snackbar service improven & verwenden :)
-    showSnackbar = false;
-    snackbarText = 'Something went wrong';
+    private snackbarSubject = new Subject<any>();
+    public snackbarState$ = this.snackbarSubject.asObservable();
 
     constructor() {}
 
-    activateSnackbar(text: string): void {
-        this.snackbarText = text;
-        this.showSnackbar = true;
+    activateSnackbar(snackbarText: string): void {
+        this.snackbarSubject.next({
+            showSnackbar: true,
+            snackbarText,
+        });
     }
 
-    hideSnackbar(): void {
-        this.showSnackbar = false;
-    }
+    hideSnackbar(): void {}
 }
