@@ -8,8 +8,6 @@ import {
 import { Round, Lobby, Player } from '../types/types';
 import { Observable } from 'rxjs';
 import firebase from 'firebase';
-import { SnackbarService } from './snackbar.service';
-import { Route, Router } from '@angular/router';
 
 export const LOBBIES_COLLECTION = 'lobbies';
 export const PLAYERS_COLLECTION = 'players';

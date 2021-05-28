@@ -34,7 +34,6 @@ export class FormJoinLobbyComponent implements OnInit {
         if (this.name === '' || this.lobbyId === '') {
             this.isValid = false;
         } else {
-            localStorage.setItem('lobbyId', this.lobbyId);
             this.store.dispatch(new SetLobbyId(this.lobbyId));
             this.lobbyId$.subscribe(async (lobbyId) => {
                 if (lobbyId) {

@@ -5,6 +5,7 @@ import { Player } from '../modules/shared/types/types';
 import { tap } from 'rxjs/operators';
 import { AddPlayer, SetPlayers } from './players.actions';
 import { DbService } from '../modules/shared/services/db.service';
+import { SnackbarService } from '../modules/shared/services/snackbar.service';
 
 interface PlayersStateModel {
     players: Player[];
@@ -28,7 +29,7 @@ export class PlayersState implements NgxsOnInit {
         return state.players.find((player) => player.isHost);
     }
 
-    constructor(private store: Store, private dbService: DbService) {}
+    constructor(private store: Store, private dbService: DbService, private snackBarService: SnackbarService) {}
 
     ngxsOnInit(context?: StateContext<PlayersStateModel>): void {
         const id = localStorage.getItem('lobby-id');
@@ -58,7 +59,6 @@ export class PlayersState implements NgxsOnInit {
                 isHost: action.isHost,
             })
             .then(() => {
-                localStorage.setItem('lobby-id', action.lobbyId);
                 this.dbService
                     .getPlayersCollection(action.lobbyId)
                     .valueChanges()
@@ -69,8 +69,8 @@ export class PlayersState implements NgxsOnInit {
                     )
                     .subscribe();
             })
-            .catch((e) => {
-                console.error(e);
+            .catch(() => {
+                this.snackBarService.activateSnackbar('Sorry, something went wrong.');
             });
     }
 

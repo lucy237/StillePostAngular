@@ -84,7 +84,7 @@ export class LobbyState implements NgxsOnInit {
     ngxsOnInit(context?: StateContext<LobbyStateModel>): void {
         const id = localStorage.getItem('lobby-id');
         if (id) {
-            this.subscribeToLobby(context, id);
+            context.dispatch(new SetLobbyId(id));
         }
     }
 
@@ -93,20 +93,18 @@ export class LobbyState implements NgxsOnInit {
         this.dbService
             .createLobby()
             .then((doc) => {
-                localStorage.setItem('lobby-id', doc.id);
                 context.dispatch(new SetLobbyId(doc.id));
             })
-            .catch((error) => {
-                // show snackbar with error message
-                console.error(error);
+            .catch(() => {
+                this.snackBarService.activateSnackbar('Sorry, something went wrong.');
             });
     }
 
     @Action(UpdateLobby)
     async updateLobby(context: StateContext<LobbyStateModel>, action: UpdateLobby): Promise<any> {
         const lobbyId = context.getState().id;
-        this.dbService.updateLobby(lobbyId, action.data).catch((error) => {
-            console.error(error);
+        this.dbService.updateLobby(lobbyId, action.data).catch(() => {
+            this.snackBarService.activateSnackbar('Sorry, something went wrong.');
         });
     }
 
@@ -119,16 +117,16 @@ export class LobbyState implements NgxsOnInit {
             playerOrder.push(player.id);
         });
 
-        this.dbService.updateLobby(lobbyId, { playerOrder }).catch((error) => {
-            console.error(error);
+        this.dbService.updateLobby(lobbyId, { playerOrder }).catch(() => {
+            this.snackBarService.activateSnackbar('Sorry, something went wrong.');
         });
     }
 
     @Action(SaveRound)
     async saveRound(context: StateContext<LobbyStateModel>, action: SaveRound): Promise<any> {
         const lobbyId = context.getState().id;
-        this.dbService.setRound(lobbyId, action.playerId, action.round).catch((error) => {
-            console.error(error);
+        this.dbService.setRound(lobbyId, action.playerId, action.round).catch(() => {
+            this.snackBarService.activateSnackbar('Sorry, something went wrong.');
         });
     }
 
@@ -139,40 +137,34 @@ export class LobbyState implements NgxsOnInit {
         if (newRoundId < playerCount) {
             this.dbService
                 .updateLobby(action.lobbyId, { roundId: newRoundId, timer: Date.now(), resultCounter: 0 })
-                .catch((error) => {
-                    console.error(error);
+                .catch(() => {
+                    this.snackBarService.activateSnackbar('Sorry, something went wrong.');
                 });
         } else {
-            this.dbService.updateLobby(action.lobbyId, { isFinished: true }).catch((error) => {
-                console.error(error);
+            this.dbService.updateLobby(action.lobbyId, { isFinished: true }).catch(() => {
+                this.snackBarService.activateSnackbar('Sorry, something went wrong.');
             });
         }
     }
 
     @Action(SetLobbyId)
     setLobbyId(context: StateContext<LobbyStateModel>, action: SetLobbyId): void {
-        this.subscribeToLobby(context, action.id);
-    }
-
-    subscribeToLobby(context: StateContext<LobbyStateModel>, id: string): void {
-        const lobbyDoc = this.dbService.getLobby(id);
+        const lobbyDoc = this.dbService.getLobby(action.id);
         lobbyDoc.get().subscribe((doc) => {
             if (doc.exists) {
+                localStorage.setItem('lobby-id', action.id);
                 lobbyDoc
                     .valueChanges()
                     .pipe(
                         tap((lobby) => {
-                            context.dispatch(new SetLobby(id, lobby));
+                            context.dispatch(new SetLobby(action.id, lobby));
                         })
                     )
                     .subscribe();
-                context.patchState({
-                    id,
-                });
+                context.patchState({ id: action.id });
             } else {
-                console.log('ERROR not found');
                 this.router.navigate(['']);
-                this.snackBarService.activateSnackbar('Sorry not found!');
+                this.snackBarService.activateSnackbar(`Sorry, we couldn't find this lobby.`);
             }
         });
     }

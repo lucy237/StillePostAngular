@@ -1,4 +1,4 @@
-  <div class="w-screen mt-10 ">
+  <div class="w-screen mt-10">
     <div class="dynamic-content flex-nowrap py-4 px-10 w-8/12 mx-auto overscroll-auto bg-blue-700" >
       <div *ngIf="currentAlbum && !isLoading">
         <h1 class="dynamic-headline">Album of {{ getPlayerById(lobby?.playerOrder[currentPlayerIndex]).name }}</h1>
@@ -14,14 +14,12 @@
                   </div>
                   {{ round.value }}
                 </div>
-
               </div>
             </div>
             <div *ngIf="round.type === 0" class="result-item justify-end ">
               <div class="flex-nowrap">
                 <span class="playerName mr-4 justify-end"> {{ getPlayerById(round.playerId).name }} </span>
                 <img [src]="round.value" alt="empty-drawing" class="max-w-lg my-auto mx-4 rounded-md bg-white"/>
-                <img *ngIf="round.value === ''" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="drawing" class="max-w-lg my-auto mx-4 rounded-md bg-white"/>
               </div>
               <img [src]="getPlayerById(round.playerId).avatar" alt="player-avatar" class="result-avatar"/>
             </div>
@@ -32,12 +30,10 @@
 
 
       <div class="result-buttonbox" *ngIf="players.length > 0">
-        <br>
-        <div class="playerName">Album {{ currentPlayerIndex + 1 }} of {{ players.length }}</div>
-        <br>
           <button [disabled]="isLoading" class="button mx-1" (click)="onPreviousClick()">
            previous
           </button>
+          <p>Album {{ currentPlayerIndex + 1 }} of {{ players.length }}</p>
           <button [disabled]="isLoading" class="button mx-1" (click)="onNextClick()">
            next
           </button>
