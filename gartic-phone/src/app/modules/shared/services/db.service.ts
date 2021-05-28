@@ -35,10 +35,6 @@ export class DbService {
         return this.getLobby(lobbyId).collection<Player>(PLAYERS_COLLECTION).doc<Player>(playerId);
     }
 
-    getAlbumCollection(lobbyId: string, playerId: string): AngularFirestoreCollection<Round> {
-        return this.getPlayer(lobbyId, playerId).collection<Round>(ROUNDS_COLLECTION);
-    }
-
     async createLobby(): Promise<DocumentReference<Lobby>> {
         return this.getLobbyCollection().add({
             created: new Date(),

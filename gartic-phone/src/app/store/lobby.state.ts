@@ -13,6 +13,8 @@ import { Lobby, Player } from '../modules/shared/types/types';
 import { DbService } from '../modules/shared/services/db.service';
 import { tap } from 'rxjs/operators';
 import { PlayersState } from './players.state.';
+import { Router } from '@angular/router';
+import { SnackbarService } from '../modules/shared/services/snackbar.service';
 
 interface LobbyStateModel {
     id: string;
@@ -72,20 +74,17 @@ export class LobbyState implements NgxsOnInit {
         return state.lobby.isFinished;
     }
 
-    constructor(private store: Store, private dbService: DbService) {}
+    constructor(
+        private store: Store,
+        private dbService: DbService,
+        private router: Router,
+        private snackBarService: SnackbarService
+    ) {}
 
     ngxsOnInit(context?: StateContext<LobbyStateModel>): void {
         const id = localStorage.getItem('lobby-id');
         if (id) {
-            this.dbService
-                .getLobby(id)
-                .valueChanges()
-                .pipe(
-                    tap((lobby) => {
-                        context.dispatch(new SetLobby(id, lobby));
-                    })
-                )
-                .subscribe();
+            context.dispatch(new SetLobbyId(id));
         }
     }
 
@@ -94,20 +93,18 @@ export class LobbyState implements NgxsOnInit {
         this.dbService
             .createLobby()
             .then((doc) => {
-                localStorage.setItem('lobby-id', doc.id);
                 context.dispatch(new SetLobbyId(doc.id));
             })
-            .catch((error) => {
-                // show snackbar with error message
-                console.error(error);
+            .catch(() => {
+                this.snackBarService.activateSnackbar('Sorry, something went wrong.');
             });
     }
 
     @Action(UpdateLobby)
     async updateLobby(context: StateContext<LobbyStateModel>, action: UpdateLobby): Promise<any> {
         const lobbyId = context.getState().id;
-        this.dbService.updateLobby(lobbyId, action.data).catch((error) => {
-            console.error(error);
+        this.dbService.updateLobby(lobbyId, action.data).catch(() => {
+            this.snackBarService.activateSnackbar('Sorry, something went wrong.');
         });
     }
 
@@ -120,16 +117,16 @@ export class LobbyState implements NgxsOnInit {
             playerOrder.push(player.id);
         });
 
-        this.dbService.updateLobby(lobbyId, { playerOrder }).catch((error) => {
-            console.error(error);
+        this.dbService.updateLobby(lobbyId, { playerOrder }).catch(() => {
+            this.snackBarService.activateSnackbar('Sorry, something went wrong.');
         });
     }
 
     @Action(SaveRound)
     async saveRound(context: StateContext<LobbyStateModel>, action: SaveRound): Promise<any> {
         const lobbyId = context.getState().id;
-        this.dbService.setRound(lobbyId, action.playerId, action.round).catch((error) => {
-            console.error(error);
+        this.dbService.setRound(lobbyId, action.playerId, action.round).catch(() => {
+            this.snackBarService.activateSnackbar('Sorry, something went wrong.');
         });
     }
 
@@ -140,30 +137,35 @@ export class LobbyState implements NgxsOnInit {
         if (newRoundId < playerCount) {
             this.dbService
                 .updateLobby(action.lobbyId, { roundId: newRoundId, timer: Date.now(), resultCounter: 0 })
-                .catch((error) => {
-                    console.error(error);
+                .catch(() => {
+                    this.snackBarService.activateSnackbar('Sorry, something went wrong.');
                 });
         } else {
-            this.dbService.updateLobby(action.lobbyId, { isFinished: true }).catch((error) => {
-                console.error(error);
+            this.dbService.updateLobby(action.lobbyId, { isFinished: true }).catch(() => {
+                this.snackBarService.activateSnackbar('Sorry, something went wrong.');
             });
         }
     }
 
     @Action(SetLobbyId)
     setLobbyId(context: StateContext<LobbyStateModel>, action: SetLobbyId): void {
-        this.dbService
-            .getLobby(action.id)
-            .valueChanges()
-            .pipe(
-                tap((lobby) => {
-                    context.dispatch(new SetLobby(action.id, lobby));
-                })
-            )
-            .subscribe();
-
-        context.patchState({
-            id: action.id,
+        const lobbyDoc = this.dbService.getLobby(action.id);
+        lobbyDoc.get().subscribe((doc) => {
+            if (doc.exists) {
+                localStorage.setItem('lobby-id', action.id);
+                lobbyDoc
+                    .valueChanges()
+                    .pipe(
+                        tap((lobby) => {
+                            context.dispatch(new SetLobby(action.id, lobby));
+                        })
+                    )
+                    .subscribe();
+                context.patchState({ id: action.id });
+            } else {
+                this.router.navigate(['']);
+                this.snackBarService.activateSnackbar(`Sorry, we couldn't find this lobby.`);
+            }
         });
     }
 

@@ -11,5 +11,5 @@
 }
 
 .result-buttonbox{
-  @apply flex justify-center mx-auto content-center mt-8 bg-white bg-opacity-50 rounded-md;
+  @apply flex w-80 justify-between items-center pl-3 pr-3 mx-auto content-center mt-8 bg-white bg-opacity-50 rounded-md;
 }

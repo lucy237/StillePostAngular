@@ -16,17 +16,16 @@ describe('GameService', () => {
     });
 
     describe('getAlbumPlayerId', () => {
-        const playerOrder = ['first', 'second', 'third'];
         it('should be own player id in 1st round', () => {
-            expect(service.getAlbumPlayerId(playerOrder, 'second', 0)).toBe('second');
+            expect(service.getAlbumPlayerId('second')).toBe('second');
         });
 
         it('should be the next player id in 2nd round', () => {
-            expect(service.getAlbumPlayerId(playerOrder, 'second', 1)).toBe('third');
+            expect(service.getAlbumPlayerId('second')).toBe('third');
         });
 
         it('should be the first player id in 3rd round', () => {
-            expect(service.getAlbumPlayerId(playerOrder, 'third', 2)).toBe('first');
+            expect(service.getAlbumPlayerId('third')).toBe('first');
         });
     });
 
