@@ -26,7 +26,7 @@ export class GamefieldComponent implements OnInit, OnDestroy {
     @Select(LobbyState.roundId) roundId$: Observable<number>;
     @Select(LobbyState.resultCounter) resultCounter$: Observable<number>;
 
-    timespan = 5;
+    timespan = 50;
     currentTime = this.timespan;
     roundValue = null;
     lobbyId: string = null;
