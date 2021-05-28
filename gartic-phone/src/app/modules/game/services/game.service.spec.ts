@@ -26,7 +26,7 @@ describe('GameService', () => {
         });
 
         it('should be the first player id in 3rd round', () => {
-            expect(service.getAlbumPlayerId(playerOrder, 'second', 2)).toBe('first');
+            expect(service.getAlbumPlayerId(playerOrder, 'third', 2)).toBe('first');
         });
     });
 
