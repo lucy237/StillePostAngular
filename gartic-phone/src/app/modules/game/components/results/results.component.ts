@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Select } from '@ngxs/store';
+import { Select, Store } from '@ngxs/store';
 import { LobbyState } from '../../../../store/lobby.state';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { PlayersState } from '../../../../store/players.state.';
-import { Lobby, Player } from '../../../shared/types/types';
+import { Lobby, Player, Round } from '../../../shared/types/types';
+import { DbService } from '../../../shared/services/db.service';
 import { AuthState } from '../../../../store/auth.state';
-import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
     selector: 'app-results',
@@ -16,28 +16,44 @@ export class ResultsComponent implements OnInit {
     @Select(AuthState.userId) playerId$: Observable<string>;
     @Select(LobbyState.lobbyId) lobbyId$: Observable<string>;
     @Select(LobbyState.lobby) lobby$: Observable<Lobby>;
-    @Select(PlayersState.players) players$: Observable<Player[]>;
     @Select(PlayersState.host) host$: Observable<Player>;
 
-    public albums = [{}];
+    isLoading = false;
+    lobby: Lobby = null;
+    players = [];
+    currentPlayerIndex = 0;
+    currentAlbum: Round[] = null;
 
-    lobbyId = '';
-    currentAlbum = 0;
-    constructor() {}
+    constructor(private store: Store, private dbService: DbService) {}
 
-    ngOnInit(): void {}
-
-    onPreviousClick(): void {
-        const previous = this.currentAlbum - 1;
-        this.currentAlbum = previous < 0 ? this.albums.length - 1 : previous;
-        console.log('previous clicked, new current Album is: ', this.currentAlbum);
-        //this.updateCurrentAvatar();
+    async ngOnInit(): Promise<void> {
+        this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
+        this.players = this.store.selectSnapshot<Player[]>(PlayersState.players);
+        await this.getNewAlbum();
     }
 
-    onNextClick(): void {
-        const next = this.currentAlbum + 1;
-        this.currentAlbum = next === this.albums.length ? 0 : next;
-        console.log('next clicked, new current album is: ', this.currentAlbum);
-        //this.updateCurrentAvatar();
+    async getNewAlbum(): Promise<void> {
+        this.isLoading = true;
+        this.currentAlbum = await this.dbService.getAllRoundsFromPlayer(
+            this.store.selectSnapshot<string>(LobbyState.lobbyId),
+            this.lobby.playerOrder[this.currentPlayerIndex]
+        );
+        this.isLoading = false;
+    }
+
+    getPlayerById(playerId): Player {
+        return this.players.find((player) => player.id === playerId);
+    }
+
+    async onPreviousClick(): Promise<void> {
+        const previous = this.currentPlayerIndex - 1;
+        this.currentPlayerIndex = previous < 0 ? this.players.length - 1 : previous;
+        await this.getNewAlbum();
+    }
+
+    async onNextClick(): Promise<void> {
+        const next = this.currentPlayerIndex + 1;
+        this.currentPlayerIndex = next === this.players.length ? 0 : next;
+        await this.getNewAlbum();
     }
 }

@@ -6,6 +6,8 @@ import {
     DocumentReference,
 } from '@angular/fire/firestore';
 import { Round, Lobby, Player } from '../types/types';
+import { Observable } from 'rxjs';
+import firebase from 'firebase';
 
 export const LOBBIES_COLLECTION = 'lobbies';
 export const PLAYERS_COLLECTION = 'players';
@@ -33,6 +35,10 @@ export class DbService {
         return this.getLobby(lobbyId).collection<Player>(PLAYERS_COLLECTION).doc<Player>(playerId);
     }
 
+    getAlbumCollection(lobbyId: string, playerId: string): AngularFirestoreCollection<Round> {
+        return this.getPlayer(lobbyId, playerId).collection<Round>(ROUNDS_COLLECTION);
+    }
+
     async createLobby(): Promise<DocumentReference<Lobby>> {
         return this.getLobbyCollection().add({
             created: new Date(),
@@ -40,6 +46,7 @@ export class DbService {
             isFull: false,
             isActive: false,
             isFinished: false,
+            resultCounter: 0,
             roundId: 0,
             timer: null,
             playerOrder: [],
@@ -50,13 +57,19 @@ export class DbService {
         return this.getLobby(lobbyId).update(data);
     }
 
+    async incrementResultCounter(lobbyId: string): Promise<void> {
+        return this.afs
+            .collection(LOBBIES_COLLECTION)
+            .doc(lobbyId)
+            .update({ resultCounter: firebase.firestore.FieldValue.increment(1) });
+    }
+
     async addPlayer(lobbyId: string, player: Player): Promise<void> {
         return this.getPlayer(lobbyId, player.id).set({
             id: player.id,
             name: player.name,
             avatar: player.avatar,
             isHost: player.isHost,
-            album: player.album,
         });
     }
     async updatePlayer(lobbyId: string, playerId: string, data: Partial<Player>): Promise<void> {
@@ -65,5 +78,21 @@ export class DbService {
 
     async setRound(lobbyId: string, playerId: string, round: Round): Promise<DocumentReference<Round>> {
         return this.getPlayer(lobbyId, playerId).collection<Round>(ROUNDS_COLLECTION).add(round);
+    }
+
+    getLastRoundFromPlayer(lobbyId: string, playerId: string): Observable<Round[]> {
+        return this.getPlayer(lobbyId, playerId)
+            .collection<Round>(ROUNDS_COLLECTION, (ref) => {
+                return ref.orderBy('roundId', 'asc').limitToLast(1);
+            })
+            .valueChanges();
+    }
+
+    async getAllRoundsFromPlayer(lobbyId: string, playerId: string): Promise<Round[]> {
+        const results = await this.getPlayer(lobbyId, playerId)
+            .collection<Round>(ROUNDS_COLLECTION, (ref) => ref.orderBy('roundId', 'asc'))
+            .get()
+            .toPromise();
+        return results.docs.map((round) => round.data());
     }
 }

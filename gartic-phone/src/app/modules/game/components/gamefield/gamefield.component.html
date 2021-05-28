@@ -5,6 +5,7 @@
   <div class="gamefield">
     <div class="game-component">
       <router-outlet (activate)="onActivate($event)"></router-outlet>
+      <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
     </div>
   </div>
 
