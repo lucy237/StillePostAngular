@@ -1,7 +1,7 @@
   <div class="w-full" *ngIf="lobby$ | async as lobby">
     <h2 class="mb-7 text-white">Playerlist {{ lobbyId }}</h2>
     <ul *ngIf="players$ | async as players">
-      <li class="player-playerlist text-gray-800" *ngFor="let player of players">
+      <li class="player-playerlist text-gray-800" [ngClass]="{ 'bg-green-400': player.isHost }" *ngFor="let player of players">
         <img [src]="player.avatar" alt="player-avatar" class="avatar"/>
         <p class="my-auto px-3">{{ player.name }}</p>
       </li>

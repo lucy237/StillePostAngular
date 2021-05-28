@@ -1,0 +1,15 @@
+.result-item {
+  @apply flex bg-white bg-opacity-50 rounded-md pb-3;
+}
+
+.result-avatar {
+  @apply mt-2 h-14 w-16 mx-2 rounded-md border-2 object-cover;
+}
+
+.result-textbox{
+  @apply w-auto h-10 bg-white ml-4 justify-center py-1.5 px-10 text-xl rounded-md;
+}
+
+.result-buttonbox{
+  @apply flex w-48 justify-center mx-auto content-center mt-8 bg-white bg-opacity-50 rounded-md;
+}

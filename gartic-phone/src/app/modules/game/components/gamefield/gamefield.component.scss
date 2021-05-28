@@ -1,0 +1,6 @@
+.game-component{
+  @apply flex w-full col-span-10 row-span-6 justify-center rounded-md;
+}
+.gamefield{
+  @apply container flex flex-col grid grid-cols-10 grid-rows-6 gap-2 bg-white col-span-3 bg-blue-700 row-span-5 p-4 rounded-md;
+}
