@@ -5,7 +5,7 @@
     <li
       *ngFor="let player of players"
       class=" flex player-playerlist bg-blue-800 text-white"
-      [ngClass]="{ 'border-4 border-blue-400': player.isHost }"
+      [ngClass]="{ 'border-4 border-green-400': player.isHost }"
     >
         <img [src]="player.avatar" alt="player-avatar" class="avatar"/>
         <p class="my-auto px-5">{{ player.name }}</p>
