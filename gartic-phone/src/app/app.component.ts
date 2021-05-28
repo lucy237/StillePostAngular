@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { AuthState } from './store/auth.state';
 import { Observable } from 'rxjs';
+import { SnackbarService } from './modules/shared/services/snackbar.service';
 
 @Component({
     selector: 'app-root',
@@ -10,4 +11,6 @@ import { Observable } from 'rxjs';
 })
 export class AppComponent {
     @Select(AuthState.userId) userId$: Observable<string>;
+
+    constructor(private snackbarService: SnackbarService) {}
 }

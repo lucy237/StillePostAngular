@@ -12,13 +12,14 @@ import { NgxsModule } from '@ngxs/store';
 import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { AuthState } from './store/auth.state';
+import { SnackbarComponent } from './modules/shared/components/snackbar/snackbar.component';
 
 const appInitFn = (angularAuth: AngularFireAuth) => {
     return () => angularAuth.signInAnonymously();
 };
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, SnackbarComponent],
     imports: [
         BrowserModule,
         AppRoutingModule,

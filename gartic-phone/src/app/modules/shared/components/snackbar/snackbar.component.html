@@ -1,0 +1,10 @@
+<!-- Snackbar -->
+<div class="flex items-center alert-footer w-full fixed bottom-0">
+  <input [checked]="!showSnackbar" type="checkbox" class="hidden" id="footeralert">
+  <label class="close cursor-pointer" title="close" for="footeralert">
+    <div class="close cursor-pointer flex items-center justify-between w-full p-2 bg-red-500 shadow text-white" title="close" for="footeralert">
+      Check what style applies overall?? why not whole width
+    </div>
+  </label>
+</div>
+<button (click)="showSnackbar = !showSnackbar">Toggle</button>

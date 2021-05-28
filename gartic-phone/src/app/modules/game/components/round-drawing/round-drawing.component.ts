@@ -1,5 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Color } from '../../../drawing-editor/utils/CanvasUtils';
+import { GameService } from '../../services/game.service';
+import { DbService } from '../../../shared/services/db.service';
+import { Lobby } from '../../../shared/types/types';
+import { LobbyState } from '../../../../store/lobby.state';
+import { Store } from '@ngxs/store';
+import { AuthState } from '../../../../store/auth.state';
 
 @Component({
     selector: 'app-round-drawing',
@@ -19,12 +25,29 @@ export class RoundDrawingComponent implements OnInit {
     color = this.colors[0];
     base64 = '';
     description = '';
+    lobby: Lobby = null;
+    playerId: string = null;
+    lobbyId: string = null;
 
     @Output() drawingChanged = new EventEmitter<{ base64: string; width: number; height: number }>();
 
-    constructor() {}
+    constructor(private gameService: GameService, private dbService: DbService, private store: Store) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.playerId = this.store.selectSnapshot<string>(AuthState.userId);
+        this.lobbyId = this.store.selectSnapshot<string>(LobbyState.lobbyId);
+        this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
+
+        // Round Logic - calculate next round route
+        const lastPlayerId = this.gameService.getLastPlayerId(this.lobby.playerOrder, this.playerId);
+        this.dbService.getLastRoundFromPlayer(this.lobbyId, lastPlayerId).subscribe(async (round) => {
+            if (this.lobby.roundId + 1 < this.lobby.playerOrder.length) {
+                if (round[0]?.value) {
+                    this.description = round[0]?.value;
+                }
+            }
+        });
+    }
 
     setColor(color: Color): void {
         this.color = color;

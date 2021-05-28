@@ -24,20 +24,18 @@ export class GamefieldComponent implements OnInit, OnDestroy {
     @Select(LobbyState.timer) timer$: Observable<number>;
     @Select(LobbyState.isFinished) isFinished$: Observable<boolean>;
 
-    timespan = 20;
-    currentTime = this.timespan;
-    lastRoundValue = null;
+    timespan = 12;
+    currentTime = null;
     roundValue = null;
     lobbyId: string = null;
     lobby: Lobby = null;
     playerId: string = null;
     hostId: string = null;
+    nextRoute: string = null;
 
-    timerSubscription: Subscription = null;
+    timeStampSubscription: Subscription = null;
     timerIntervalSubscription: Subscription = null;
     roundValueSubscription: Subscription = null;
-    isFinishedSubscription: Subscription = null;
-    getRoundFromPlayerSubscription: Subscription = null;
 
     constructor(
         private store: Store,
@@ -50,17 +48,21 @@ export class GamefieldComponent implements OnInit, OnDestroy {
         this.lobbyId = this.store.selectSnapshot<string>(LobbyState.lobbyId);
         this.hostId = this.store.selectSnapshot<Player>(PlayersState.host).id;
         this.playerId = this.store.selectSnapshot<string>(AuthState.userId);
+        this.lobby = this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
 
-        this.isFinishedSubscription = this.isFinished$.subscribe(async (isFinished) => {
-            if (isFinished) {
-                await this.router.navigate(['results']);
-            }
-        });
-
-        this.timerSubscription = this.timer$.subscribe((timestamp) => {
-            this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
+        this.timeStampSubscription = this.timer$.subscribe((timestamp) => {
             if (timestamp !== null) {
-                // timer logic
+                this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
+
+                // Round Logic - calculate next round route
+                if (this.lobby.roundId + 1 < this.lobby.playerOrder.length) {
+                    this.nextRoute = `${this.lobbyId}/game/${this.gameService.getNextRoute(this.lobby.roundId)}`;
+                } else {
+                    this.nextRoute = `/results`;
+                }
+
+                // Timer / play round
+                this.currentTime = this.timespan;
                 this.timerIntervalSubscription = interval(1000)
                     .pipe(takeWhile(() => this.currentTime > 0))
                     .subscribe(
@@ -72,37 +74,16 @@ export class GamefieldComponent implements OnInit, OnDestroy {
                         },
                         () => {},
                         async () => {
-                            this.lobby = this.store.selectSnapshot<Lobby>(LobbyState.lobby);
-                            await this.saveRound();
+                            this.saveRound();
+
                             if (this.playerId === this.hostId) {
-                                timer(3000).subscribe(async () => {
-                                    await this.store.dispatch(new StartNewRound(this.lobbyId));
-                                });
+                                this.store.dispatch(new StartNewRound(this.lobbyId));
                             }
-                            timer(4000).subscribe(() => {
-                                // go to next round logic
-                                if (!this.store.selectSnapshot<boolean>(LobbyState.isFinished)) {
-                                    const lastPlayerId = this.gameService.getLastPlayerId(
-                                        this.lobby.playerOrder,
-                                        this.playerId
-                                    );
-                                    this.getRoundFromPlayerSubscription = this.dbService
-                                        .getLastRoundFromPlayer(this.lobbyId, lastPlayerId)
-                                        .subscribe(async (round) => {
-                                            if (!this.store.selectSnapshot<boolean>(LobbyState.isFinished)) {
-                                                if (round[0]?.value) {
-                                                    this.lastRoundValue = round[0]?.value;
-                                                }
-                                                const nextRoute = this.gameService.getNextRoute(this.lobby.roundId - 1);
-                                                await this.router.navigate([`${this.lobbyId}/game/${nextRoute}`]);
-                                                this.resetGameField();
-                                            }
-                                        });
-                                }
-                            });
+
+                            await this.resetGameField();
+                            await this.router.navigate([this.nextRoute]);
                         }
                     );
-                this.timerIntervalSubscription.unsubscribe();
             }
         });
     }
@@ -130,7 +111,6 @@ export class GamefieldComponent implements OnInit, OnDestroy {
 
     onActivate(componentReference: StartComponent | DrawingEditorComponent | DescriptionCanvasComponent): void {
         if (componentReference instanceof RoundDrawingComponent) {
-            componentReference.setDescription(this.lastRoundValue);
             this.roundValueSubscription = componentReference.drawingChanged.subscribe((params) => {
                 this.roundValue = params.base64;
             });
@@ -144,10 +124,12 @@ export class GamefieldComponent implements OnInit, OnDestroy {
         }
     }
 
+    delay(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
     ngOnDestroy(): void {
-        this.timerSubscription.unsubscribe();
-        this.timerIntervalSubscription.unsubscribe();
+        this.timeStampSubscription.unsubscribe();
         this.roundValueSubscription.unsubscribe();
-        this.getRoundFromPlayerSubscription.unsubscribe();
     }
 }
